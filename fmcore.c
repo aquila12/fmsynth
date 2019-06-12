@@ -16,16 +16,24 @@
 #define SINE_BUFFERSIZE (1 << SINE_BUFBITS)
 #define SINE_AMPLITUDE  INT32_MAX
 
+#define HERTZ ((float)UINT32_MAX / (float)RATE)
+
+#define FM_OPS 3
+
 typedef int32_t sample_t;
 typedef uint32_t phase_t;
 typedef int32_t frequency_t;
 
 typedef struct fm_op_s {
+  frequency_t f;
+  phase_t p;
   sample_t last_output;
 } fm_op;
 
 sample_t fm_output;
 sample_t fm_sine_buf[SINE_BUFFERSIZE];
+
+fm_op fm_operators[FM_OPS];
 
 void fm_init() {
   double phase;
@@ -49,9 +57,26 @@ sample_t fm_sine(phase_t theta) {
 }
 
 void fm_timestep() {
-  static phase_t p=0;
-  p += 39370534;
-  fm_output = fm_sine(p);
+  fm_output = 0;
+
+  for(int i=0; i<FM_OPS; ++i) {
+    fm_operators[i].p += fm_operators[i].f;
+    fm_operators[i].last_output = fm_sine(fm_operators[i].p);
+    fm_output += fm_operators[i].last_output / 8;
+  }
+}
+
+void set_oscillator(int i, float freq) {
+  fm_operators[i].f = freq * HERTZ;
+}
+
+void render(float duration) {
+  int n = RATE * duration;
+  for(int i=0; i<n; ++i) {
+    fm_timestep();
+    int16_t s = fm_output >> 16;
+    write(1, &s, sizeof(s));
+  }
 }
 
 int main() {
@@ -59,10 +84,15 @@ int main() {
   fm_init();
   fprintf(stderr, "Initialized\n");
 
-  for(int i=0; i<RATE; ++i) {
-    fm_timestep();
-    int16_t s = fm_output >> 16;
-    write(1, &s, sizeof(s));
+  for(int i=0; i<8; ++i) {
+    set_oscillator(0, 261.6256);
+    set_oscillator(1, 329.6276);
+    set_oscillator(2, 391.9954);
+    render(0.9 * 0.25);
+    set_oscillator(0, 0);
+    set_oscillator(1, 0);
+    set_oscillator(2, 0);
+    render(0.1 * 0.25);
   }
 
   fprintf(stderr, "Finished\n");
