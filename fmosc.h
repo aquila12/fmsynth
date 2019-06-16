@@ -19,7 +19,6 @@ typedef int32_t frequency_t;
 
 typedef struct fmosc_s {
   fmel el;
-  int en;
   frequency_t f0;
   phase_t p;
   float fmul;
