@@ -21,6 +21,10 @@ sample_t fmel_resolve(fmel *el) {
   return el->out;
 }
 
+void fmel_event(fmel *el, fmevent_t event, const void *event_data) {
+  el->event(el, event, event_data);
+}
+
 void fm_timestep() {
   sample_number += 1;
 
@@ -51,16 +55,16 @@ int main() {
   const float g4 = 391.9954;
 
   for(int i=0; i<8; ++i) {
-    fm_operators[0].el.event(&fm_operators[0].el, fmev_note_on, 0);
-    fm_operators[1].el.event(&fm_operators[1].el, fmev_note_on, 0);
-    fm_operators[2].el.event(&fm_operators[2].el, fmev_note_on, 0);
-    fm_operators[0].el.event(&fm_operators[0].el, fmev_freq_change, &c4);
-    fm_operators[1].el.event(&fm_operators[1].el, fmev_freq_change, &e4);
-    fm_operators[2].el.event(&fm_operators[2].el, fmev_freq_change, &g4);
+    fmel_event(&fm_operators[0].el, fmev_note_on, 0);
+    fmel_event(&fm_operators[1].el, fmev_note_on, 0);
+    fmel_event(&fm_operators[2].el, fmev_note_on, 0);
+    fmel_event(&fm_operators[0].el, fmev_freq_change, &c4);
+    fmel_event(&fm_operators[1].el, fmev_freq_change, &e4);
+    fmel_event(&fm_operators[2].el, fmev_freq_change, &g4);
     render(0.9 * 0.25);
-    fm_operators[0].el.event(&fm_operators[0].el, fmev_note_off, 0);
-    fm_operators[1].el.event(&fm_operators[1].el, fmev_note_off, 0);
-    fm_operators[2].el.event(&fm_operators[2].el, fmev_note_off, 0);
+    fmel_event(&fm_operators[0].el, fmev_note_off, 0);
+    fmel_event(&fm_operators[1].el, fmev_note_off, 0);
+    fmel_event(&fm_operators[2].el, fmev_note_off, 0);
     render(0.1 * 0.25);
   }
 
