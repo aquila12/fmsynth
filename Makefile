@@ -1,3 +1,3 @@
 LDLIBS+=-lm
 
-fmcore: fmcore.o
+fmcore: fmcore.o fmosc.o
