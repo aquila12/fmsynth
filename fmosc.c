@@ -45,15 +45,16 @@ void fmosc_event(fmel *el, fmevent_t event, const void *event_data) {
     break;
 
     case fmev_freq_change:
-    osc->f = *((float*)event_data) * HERTZ;
+    osc->f = *((float*)event_data) * osc->fmul * HERTZ;
     break;
   }
 }
 
-void fmosc_configure(fmosc *osc, size_t count) {
-  for(int i=0; i<count; ++i) {
-    osc[i].el.update = fmosc_update;
-    osc[i].el.event = fmosc_event;
-    osc[i].en = 0;
-  }
+void fmosc_configure(fmosc *osc, float freq_mul, float mod_index) {
+  osc->el.update = fmosc_update;
+  osc->el.event = fmosc_event;
+
+  osc->en = 0;
+  osc->fmul = freq_mul;
+  osc->beta = mod_index;
 }
