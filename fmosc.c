@@ -67,6 +67,5 @@ void fmosc_configure(fmosc *osc, float freq_mul, float mod_index, fmel *input) {
   osc->f0 = 0;
   osc->fmul = freq_mul;
   osc->beta = mod_index * SAMPLE_1;
-  fprintf(stderr,"%f %d\n", mod_index, osc->beta);
   osc->input = input;
 }

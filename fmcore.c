@@ -31,8 +31,8 @@ void fm_timestep() {
   fm_output = 0;
   for(int i=0; i<FM_OPS; ++i) {
     fmel_resolve(&fm_operators[i].el);
-    fm_output += fm_operators[i].el.out * 32;
   }
+  fm_output += fm_operators[1].el.out * 32;
 }
 
 void render(float duration) {
@@ -54,7 +54,7 @@ int main() {
   fmel_event(&lfo.el, fmev_freq_change, &lfo_rate);
   fmel_event(&lfo.el, fmev_note_on, 0);
   fmosc_configure(&fm_operators[0], 2.0, 0.006, &lfo.el);
-  fmosc_configure(&fm_operators[1], 1.0, 0.006, &lfo.el);
+  fmosc_configure(&fm_operators[1], 1.0, 0.4, &fm_operators[0].el);
   fmosc_configure(&fm_operators[2], 1.0, 0.006, &lfo.el);
   fprintf(stderr, "Initialized\n");
 
@@ -67,7 +67,7 @@ int main() {
     fmel_event(&fm_operators[1].el, fmev_note_on, 0);
     fmel_event(&fm_operators[2].el, fmev_note_on, 0);
     fmel_event(&fm_operators[0].el, fmev_freq_change, &c4);
-    fmel_event(&fm_operators[1].el, fmev_freq_change, &e4);
+    fmel_event(&fm_operators[1].el, fmev_freq_change, &c4);
     fmel_event(&fm_operators[2].el, fmev_freq_change, &g4);
     render(0.9 * 0.25);
     fmel_event(&fm_operators[0].el, fmev_note_off, 0);
