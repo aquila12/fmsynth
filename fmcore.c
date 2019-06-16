@@ -14,10 +14,19 @@ sample_t fm_output;
 fmel_t lfo_el;
 fmosc_t lfo_osc;
 
+int fminstr_init_ch(fmel_t *el) {
+  /* Patch does this */
+  fmosc_configure(&el[0], 2.0, 0.006, &lfo_el);
+  fmosc_configure(&el[1], 1.0, 0.4, &el[0]);
+  // Configure ADSR
+  // Configure Amplifier
+}
+
 int fminstr_init(fminstr_t *instr, /* patch, */ size_t n_channels) {
   instr->channels = malloc(n_channels * sizeof(fminstr_t));
   instr->n_channels = n_channels;
 
+  /* Patch specifies these */
   size_t n_ops = 2;
   size_t n_adsr = 1;
   size_t n_ampl = 1;
@@ -31,12 +40,10 @@ int fminstr_init(fminstr_t *instr, /* patch, */ size_t n_channels) {
 
   fmel_t *current_el = instr->elements;
 
-  /* Patch does this */
-  /* TODO: Need to initialize multiple channels */
-  fmosc_configure(&instr->elements[0], 2.0, 0.006, &lfo_el);
-  fmosc_configure(&instr->elements[1], 1.0, 0.4, &instr->elements[0]);
-  // Configure ADSR
-  // Configure Amplifier
+  for(int i=0; i<n_channels; ++i) {
+    size_t els_per_ch = (n_ops + n_adsr + n_ampl);
+    fminstr_init_ch(&instr->elements[i * els_per_ch]);
+  }
 
   return 0;
 }
