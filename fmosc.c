@@ -3,6 +3,7 @@
 
 #include "fmosc.h"
 #include "math.h"
+#include "stdlib.h"
 
 sample_t sine_buf[SINE_BUFFERSIZE];
 
@@ -27,22 +28,22 @@ sample_t sine(phase_t theta) {
   return (q & 2) ? -s : s;
 }
 
-sample_t fmosc_update(fmel *el) {
-  fmosc *osc = (fmosc*)el;
+void fmosc_update(fmel_t *el) {
+  fmosc_t *osc = el->data;
   int32_t mod_input;
 
   if(osc->beta && osc->input) {
-    mod_input = SAMPLE_1 + MUL(osc->beta, fmel_resolve(osc->input));
+    mod_input = SAMPLE_1 + MUL(osc->beta, osc->input->out);
     osc->p += MUL(osc->f0, mod_input);
   } else {
     osc->p += osc->f0;
   }
 
-  return sine(osc->p);
+  el->out = sine(osc->p);
 }
 
-void fmosc_event(fmel *el, fmevent_t event, const void *event_data) {
-  fmosc *osc = (fmosc*)el;
+void fmosc_event(fmel_t *el, fmevent_t event, const void *event_data) {
+  fmosc_t *osc = el->data;
   switch(event) {
     case fmev_freq_change:
     osc->f0 = *((float*)event_data) * osc->fmul * HERTZ;
@@ -50,9 +51,13 @@ void fmosc_event(fmel *el, fmevent_t event, const void *event_data) {
   }
 }
 
-void fmosc_configure(fmosc *osc, float freq_mul, float mod_index, fmel *input) {
-  osc->el.update = fmosc_update;
-  osc->el.event = fmosc_event;
+void fmosc_configure(fmel_t *el, float freq_mul, float mod_index, fmel_t *input) {
+  if(!el->data) el->data = malloc(sizeof(fmosc_t));
+  fmosc_t *osc = el->data;
+  if(!osc) return;
+
+  el->update = fmosc_update;
+  el->event = fmosc_event;
 
   osc->p = 0;
   osc->f0 = 0;

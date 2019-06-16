@@ -18,14 +18,12 @@ typedef uint32_t phase_t;
 typedef int32_t frequency_t;
 
 typedef struct fmosc_s {
-  fmel el;
   frequency_t f0;
   phase_t p;
   float fmul;
   sample_t beta;
-  fmel *input;
-} fmosc;
+  fmel_t *input;
+} fmosc_t;
 
 void fmosc_init();
-void fmosc_configure(fmosc *osc, float freq_mul, float mod_index, fmel *input);
-void fmosc_set(fmosc *osc, float freq);
+void fmosc_configure(fmel_t *el, float freq_mul, float mod_index, fmel_t *input);
