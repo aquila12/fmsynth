@@ -27,18 +27,33 @@ sample_t sine(phase_t theta) {
   return (q & 2) ? -s : s;
 }
 
-void fmosc_set(fmosc *osc, float freq_hz) {
-  osc->f = freq_hz * HERTZ;
-}
-
 sample_t fmosc_update(fmel *el) {
   fmosc *osc = (fmosc*)el;
-  osc->p += osc->f;
+  if(osc->en) osc->p += osc->f;
   return sine(osc->p);
+}
+
+void fmosc_event(fmel *el, fmevent_t event, const void *event_data) {
+  fmosc *osc = (fmosc*)el;
+  switch(event) {
+    case fmev_note_on:
+    osc->en = 1;
+    break;
+
+    case fmev_note_off:
+    osc->en = 0;
+    break;
+
+    case fmev_freq_change:
+    osc->f = *((float*)event_data) * HERTZ;
+    break;
+  }
 }
 
 void fmosc_configure(fmosc *osc, size_t count) {
   for(int i=0; i<count; ++i) {
     osc[i].el.update = fmosc_update;
+    osc[i].el.event = fmosc_event;
+    osc[i].en = 0;
   }
 }

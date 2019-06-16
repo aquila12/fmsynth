@@ -46,14 +46,21 @@ int main() {
   fmosc_configure(fm_operators, FM_OPS);
   fprintf(stderr, "Initialized\n");
 
+  const float c4 = 261.6256;
+  const float e4 = 329.6276;
+  const float g4 = 391.9954;
+
   for(int i=0; i<8; ++i) {
-    fmosc_set(&fm_operators[0], 261.6256);
-    fmosc_set(&fm_operators[1], 329.6276);
-    fmosc_set(&fm_operators[2], 391.9954);
+    fm_operators[0].el.event(&fm_operators[0].el, fmev_note_on, 0);
+    fm_operators[1].el.event(&fm_operators[1].el, fmev_note_on, 0);
+    fm_operators[2].el.event(&fm_operators[2].el, fmev_note_on, 0);
+    fm_operators[0].el.event(&fm_operators[0].el, fmev_freq_change, &c4);
+    fm_operators[1].el.event(&fm_operators[1].el, fmev_freq_change, &e4);
+    fm_operators[2].el.event(&fm_operators[2].el, fmev_freq_change, &g4);
     render(0.9 * 0.25);
-    fmosc_set(&fm_operators[0], 0);
-    fmosc_set(&fm_operators[1], 0);
-    fmosc_set(&fm_operators[2], 0);
+    fm_operators[0].el.event(&fm_operators[0].el, fmev_note_off, 0);
+    fm_operators[1].el.event(&fm_operators[1].el, fmev_note_off, 0);
+    fm_operators[2].el.event(&fm_operators[2].el, fmev_note_off, 0);
     render(0.1 * 0.25);
   }
 
