@@ -47,9 +47,9 @@ void render(float duration) {
 int main() {
   fprintf(stderr, "Initializing\n");
   fmosc_init();
-  fmosc_configure(&fm_operators[0], 2.0, 0.0);
-  fmosc_configure(&fm_operators[1], 1.0, 0.0);
-  fmosc_configure(&fm_operators[2], 1.0, 0.0);
+  fmosc_configure(&fm_operators[0], 2.0, 0.0, 0);
+  fmosc_configure(&fm_operators[1], 1.0, 0.0, 0);
+  fmosc_configure(&fm_operators[2], 1.0, 0.0, 0);
   fprintf(stderr, "Initialized\n");
 
   const float c4 = 261.6256;

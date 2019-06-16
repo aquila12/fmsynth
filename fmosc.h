@@ -23,8 +23,9 @@ typedef struct fmosc_s {
   frequency_t f;
   phase_t p;
   float fmul, beta;
+  fmel *input;
 } fmosc;
 
 void fmosc_init();
-void fmosc_configure(fmosc *osc, float freq_mul, float mod_index);
+void fmosc_configure(fmosc *osc, float freq_mul, float mod_index, fmel *input);
 void fmosc_set(fmosc *osc, float freq);

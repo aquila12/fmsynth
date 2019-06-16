@@ -50,11 +50,12 @@ void fmosc_event(fmel *el, fmevent_t event, const void *event_data) {
   }
 }
 
-void fmosc_configure(fmosc *osc, float freq_mul, float mod_index) {
+void fmosc_configure(fmosc *osc, float freq_mul, float mod_index, fmel *input) {
   osc->el.update = fmosc_update;
   osc->el.event = fmosc_event;
 
   osc->en = 0;
   osc->fmul = freq_mul;
   osc->beta = mod_index;
+  osc->input = input;
 }
