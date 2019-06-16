@@ -10,7 +10,7 @@
 #define PHASE_SINE_SHIFT (PHASE_BITS - PHASE_SIG_BITS)
 
 #define SINE_BUFFERSIZE (1 << SINE_BUFBITS)
-#define SINE_AMPLITUDE  INT32_MAX
+#define SINE_AMPLITUDE  SAMPLE_1
 
 #define HERTZ ((float)UINT32_MAX / (float)RATE)
 
@@ -20,9 +20,10 @@ typedef int32_t frequency_t;
 typedef struct fmosc_s {
   fmel el;
   int en;
-  frequency_t f;
+  frequency_t f0;
   phase_t p;
-  float fmul, beta;
+  float fmul;
+  sample_t beta;
   fmel *input;
 } fmosc;
 

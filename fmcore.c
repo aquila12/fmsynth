@@ -14,7 +14,7 @@ sample_t fm_output;
 fmosc fm_operators[FM_OPS];
 
 sample_t fmel_resolve(fmel *el) {
-  if((int8_t)(el->last_updated - sample_number) < 0) {
+  if(el->last_updated != sample_number) {
     el->last_updated = sample_number;
     el->out = el->update(el);
   }
@@ -31,7 +31,7 @@ void fm_timestep() {
   fm_output = 0;
   for(int i=0; i<FM_OPS; ++i) {
     fmel_resolve(&fm_operators[i].el);
-    fm_output += fm_operators[i].el.out / 8;
+    fm_output += fm_operators[i].el.out * 32;
   }
 }
 
@@ -45,18 +45,24 @@ void render(float duration) {
 }
 
 int main() {
+  fmosc lfo;
+  float lfo_rate = 10.0;
+
   fprintf(stderr, "Initializing\n");
   fmosc_init();
-  fmosc_configure(&fm_operators[0], 2.0, 0.0, 0);
-  fmosc_configure(&fm_operators[1], 1.0, 0.0, 0);
-  fmosc_configure(&fm_operators[2], 1.0, 0.0, 0);
+  fmosc_configure(&lfo, 1.0, 0.0, 0);
+  fmel_event(&lfo.el, fmev_freq_change, &lfo_rate);
+  fmel_event(&lfo.el, fmev_note_on, 0);
+  fmosc_configure(&fm_operators[0], 2.0, 0.006, &lfo.el);
+  fmosc_configure(&fm_operators[1], 1.0, 0.006, &lfo.el);
+  fmosc_configure(&fm_operators[2], 1.0, 0.006, &lfo.el);
   fprintf(stderr, "Initialized\n");
 
   const float c4 = 261.6256;
   const float e4 = 329.6276;
   const float g4 = 391.9954;
 
-  for(int i=0; i<8; ++i) {
+  for(int i=0; i<16; ++i) {
     fmel_event(&fm_operators[0].el, fmev_note_on, 0);
     fmel_event(&fm_operators[1].el, fmev_note_on, 0);
     fmel_event(&fm_operators[2].el, fmev_note_on, 0);
