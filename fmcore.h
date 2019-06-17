@@ -40,6 +40,8 @@ typedef struct fmel_s {
   sample_t out;
 } fmel_t;
 
+int fmel_init(fmel_t *el);
+
 typedef struct fmcontainer_s {
   fmel_t el;
   fmel_t **p_elements;
