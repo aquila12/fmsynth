@@ -38,7 +38,6 @@ typedef struct fmel_s {
   fmel_update_func update;
   fmel_event_func event;
   sample_t out;
-  int8_t last_updated;
 } fmel_t;
 
 sample_t fmel_resolve(fmel_t *el);
