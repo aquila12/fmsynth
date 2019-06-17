@@ -63,19 +63,37 @@ int fmch_init(fmcontainer_t *ch /*, patch */) {
   size_t n_adsr = 1;
   size_t n_ampl = 1;
 
-  size_t n_elements = n_ops + n_adsr + n_ampl;
-
   if(fmcontainer_init(ch, n_ops + n_adsr + n_ampl)) return -1;
 
   /* Patch does this */
   fmel_t **el = ch->p_elements;
-  fmosc_t* op = calloc(2, sizeof(fmosc_t)); /* FIXME: never freed */
+  fmosc_t *op = calloc(2, sizeof(fmosc_t)); /* FIXME: never freed */
   fmosc_configure(&op[0], 2.0, 0.006, &lfo_osc);
   fmosc_configure(&op[1], 1.0, 0.4, &op[0]);
   el[0] = &op[0];
   el[1] = &op[1];
   // Configure ADSR
   // Configure Amplifier
+
+  return 0;
+}
+
+int fminstr_init(fmcontainer_t *instr, size_t n_channels /*, patch */) {
+  size_t n_osc = 0; /* "Global" LFOs */
+  size_t n_ampl = 1; /* Channel mixer */
+
+  if(fmcontainer_init(instr, n_osc + n_channels + n_ampl)) return -1;
+
+  /* Patch does this */
+  fmel_t **el = instr->p_elements;
+  fmosc_t *op = 0;
+  fmcontainer_t *ch = calloc(n_channels, sizeof(fmcontainer_t)); /* FIXME: never freed */
+  //fmosc_configure(...);
+  for(int i=0; i<n_channels; ++i) {
+    fmch_init(&ch[i]);
+    el[i] = &ch[i];
+  }
+  //fmamp_configure(...);
 
   return 0;
 }
