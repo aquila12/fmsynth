@@ -84,7 +84,7 @@ int fmch_init(fmcontainer_t *ch /*, patch */) {
   fmosc_t *op1 = calloc(1, sizeof(fmosc_t));
   fmamp_t *amp = calloc(1, sizeof(fmamp_t));
   fmosc_configure(op0, 2.0, 0.006, &lfo_osc.el);
-  fmosc_configure(op1, 1.0, 0.4, &op0->el);
+  fmosc_configure(op1, 1.0, 0.8, &op0->el);
   fmamp_init(amp, 1);
   fmamp_connect(amp, 0, &op1->el, SAMPLE_1);
   el[0] = &op0->el;
