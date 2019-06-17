@@ -39,7 +39,6 @@ typedef struct fmel_s {
   fmel_event_func event;
   sample_t out;
   int8_t last_updated;
-  void *data;
 } fmel_t;
 
 sample_t fmel_resolve(fmel_t *el);
@@ -47,7 +46,7 @@ sample_t fmel_resolve(fmel_t *el);
 typedef struct fminstr_s {
   fmch_t *channels;
   size_t n_channels;
-  fmel_t *elements;
+  fmel_t **elements;
   size_t n_elements;
 } fminstr_t;
 

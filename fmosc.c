@@ -29,7 +29,7 @@ sample_t sine(phase_t theta) {
 }
 
 void fmosc_update(fmel_t *el) {
-  fmosc_t *osc = el->data;
+  fmosc_t *osc = el;
   int32_t mod_input;
 
   if(osc->beta && osc->input) {
@@ -43,7 +43,7 @@ void fmosc_update(fmel_t *el) {
 }
 
 void fmosc_event(fmel_t *el, fmevent_t event, const void *event_data) {
-  fmosc_t *osc = el->data;
+  fmosc_t *osc = el;
   switch(event) {
     case fmev_freq_change:
     osc->f0 = *((float*)event_data) * osc->fmul * HERTZ;
@@ -52,8 +52,7 @@ void fmosc_event(fmel_t *el, fmevent_t event, const void *event_data) {
 }
 
 void fmosc_configure(fmel_t *el, float freq_mul, float mod_index, fmel_t *input) {
-  if(!el->data) el->data = malloc(sizeof(fmosc_t));
-  fmosc_t *osc = el->data;
+  fmosc_t *osc = el;
   if(!osc) return;
 
   el->update = fmosc_update;

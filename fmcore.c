@@ -14,17 +14,19 @@ sample_t fm_output;
 fmel_t lfo_el;
 fmosc_t lfo_osc;
 
-int fminstr_init_ch(fmel_t *el) {
+int fminstr_init_ch(fmel_t **pel) {
   /* Patch does this */
-  fmosc_configure(&el[0], 2.0, 0.006, &lfo_el);
-  fmosc_configure(&el[1], 1.0, 0.4, &el[0]);
+  pel[0] = calloc(1, sizeof(fmosc_t));
+  pel[1] = calloc(1, sizeof(fmosc_t));
+  fmosc_configure(pel[0], 2.0, 0.006, &lfo_el);
+  fmosc_configure(pel[1], 1.0, 0.4, pel[0]);
   // Configure ADSR
   // Configure Amplifier
 }
 
 int fminstr_init(fminstr_t *instr, /* patch, */ size_t n_channels) {
   instr->channels = malloc(n_channels * sizeof(fminstr_t));
-  instr->n_channels = n_channels;
+  instr->n_channels = 1;
 
   /* Patch specifies these */
   size_t n_ops = 2;
@@ -33,12 +35,11 @@ int fminstr_init(fminstr_t *instr, /* patch, */ size_t n_channels) {
 
   size_t n_elements = n_channels * (n_ops + n_adsr + n_ampl);
 
-  instr->elements = calloc(n_elements, sizeof(fmel_t));
+  /* FIXME: Should not be doing calloc, needs to be sized correctly */
+  instr->elements = calloc(n_elements, sizeof(fmel_t*));
   instr->n_elements = n_elements;
 
   if(instr->elements==0 || instr->channels==0) return -1;
-
-  fmel_t *current_el = instr->elements;
 
   for(int i=0; i<n_channels; ++i) {
     size_t els_per_ch = (n_ops + n_adsr + n_ampl);
@@ -50,14 +51,8 @@ int fminstr_init(fminstr_t *instr, /* patch, */ size_t n_channels) {
 
 void fminstr_free(fminstr_t *instr) {
   if(instr->channels) free(instr->channels);
-  if(instr->elements) {
-    for(int i=0; i<instr->n_elements; ++i) {
-      void* data = instr->elements[i].data;
-      if(data) free(data);
-    }
+  if(instr->elements) free(instr->elements);
 
-    free(instr->elements);
-  }
   instr->channels = 0;
   instr->elements = 0;
   instr->n_channels = instr->n_elements = 0;
@@ -66,16 +61,16 @@ void fminstr_free(fminstr_t *instr) {
 void fminstr_timestep(fminstr_t *instr) {
   fmel_t *el;
   for(int i=0; i<instr->n_elements; ++i) {
-    el = &instr->elements[i];
-    if(el->update) el->update(el);
+    el = instr->elements[i];
+    if(el && el->update) el->update(el);
   }
 }
 
 void fminstr_event(fminstr_t *instr, fmevent_t event, const void *event_data) {
   fmel_t *el;
   for(int i=0; i<instr->n_elements; ++i) {
-    el = &instr->elements[i];
-    if(el->event) el->event(el, event, event_data);
+    el = instr->elements[i];
+    if(el && el->event) el->event(el, event, event_data);
   }
 }
 
@@ -83,7 +78,7 @@ void render(float duration, fminstr_t *instr) {
   int n = RATE * duration;
   for(int i=0; i<n; ++i) {
     fminstr_timestep(instr);
-    int16_t s = (instr->elements[1].out * 32) >> 16;
+    int16_t s = (instr->elements[1]->out * 32) >> 16;
     write(1, &s, sizeof(s));
   }
 }
@@ -91,8 +86,6 @@ void render(float duration, fminstr_t *instr) {
 int main() {
   fminstr_t clar;
   float lfo_rate = 10.0;
-
-  lfo_el.data = &lfo_osc;
 
   fprintf(stderr, "Initializing\n");
   fmosc_init();
