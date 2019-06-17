@@ -10,6 +10,53 @@ sample_t fm_output;
 
 fmosc_t lfo_osc;
 
+int fmel_init(fmel_t *el) {
+  el->update = 0;
+  el->event = 0;
+  el->out = 0;
+  return 0;
+}
+
+void fmcontainer_update(fmcontainer_t *co);
+void fmcontainer_event(fmcontainer_t *co, fmevent_t event, const void *event_data);
+int fmcontainer_init(fmcontainer_t *co, size_t n_elements) {
+  if(fmel_init(co)) return -1;
+
+  co->el.update = fmcontainer_update;
+  co->el.event  = fmcontainer_event;
+
+  if(co->p_elements) free(co->p_elements);
+  co->p_elements = calloc(n_elements, sizeof(fmel_t*));
+  co->n_elements = n_elements;
+  return (co->p_elements ? 0 : -1);
+}
+
+/* NB: Free your own elements */
+void fmcontainer_free(fmcontainer_t *co) {
+  if(co->p_elements) free(co->p_elements);
+
+  co->n_elements = 0;
+  co->p_elements = 0;
+}
+
+void fmcontainer_update(fmcontainer_t *co) {
+  fmel_t **el = co->p_elements;
+  if(!el) return;
+
+  for(int i=0; i<co->n_elements; ++i) {
+    if(el[i] && el[i]->update) el[i]->update(el[i]);
+  }
+}
+
+void fmcontainer_event(fmcontainer_t *co, fmevent_t event, const void *event_data) {
+  fmel_t **el = co->p_elements;
+  if(!el) return;
+
+  for(int i=0; i<co->n_elements; ++i) {
+    if(el[i] && el[i]->event) el[i]->event(el[i], event, event_data);
+  }
+}
+
 int fmch_init(fmcontainer_t *ch /*, patch */) {
   /* Patch specifies these */
   size_t n_ops = 2;
@@ -33,43 +80,10 @@ int fmch_init(fmcontainer_t *ch /*, patch */) {
   return 0;
 }
 
-int fmcontainer_init(fmcontainer_t *co, size_t n_elements) {
-  if(co->p_elements) free(co->p_elements);
-  co->p_elements = calloc(n_elements, sizeof(fmel_t*));
-  co->n_elements = n_elements;
-  return (co->p_elements ? 0 : -1);
-}
-
-/* NB: Free your own elements */
-void fmcontainer_free(fmcontainer_t *co) {
-  if(co->p_elements) free(co->p_elements);
-
-  co->n_elements = 0;
-  co->p_elements = 0;
-}
-
-void fmch_timestep(fmcontainer_t *ch) {
-  fmel_t **el = ch->p_elements;
-  if(!el) return;
-
-  for(int i=0; i<ch->n_elements; ++i) {
-    if(el[i] && el[i]->update) el[i]->update(el[i]);
-  }
-}
-
-void fmch_event(fmcontainer_t *ch, fmevent_t event, const void *event_data) {
-  fmel_t **el = ch->p_elements;
-  if(!el) return;
-
-  for(int i=0; i<ch->n_elements; ++i) {
-    if(el[i] && el[i]->event) el[i]->event(el[i], event, event_data);
-  }
-}
-
 void render(float duration, fmcontainer_t *ch) {
   int n = RATE * duration;
   for(int i=0; i<n; ++i) {
-    fmch_timestep(ch);
+    if(ch && ch->el.update) ch->el.update(ch);
     int16_t s = (ch->p_elements[1]->out * 32) >> 16;
     write(1, &s, sizeof(s));
   }
@@ -95,12 +109,12 @@ int main() {
   const float g4 = 391.9954;
 
   for(int i=0; i<16; ++i) {
-    fmch_event(clar, fmev_note_on, 0);
-    fmch_event(clar, fmev_freq_change, &c4);
+    fmcontainer_event(clar, fmev_note_on, 0);
+    fmcontainer_event(clar, fmev_freq_change, &c4);
     //fmel_event(clar->[1], fmev_freq_change, &e4);
     //fmel_event(clar->[2], fmev_freq_change, &g4);
     render(0.9 * 0.25, clar);
-    fmch_event(clar, fmev_note_off, 0);
+    fmcontainer_event(clar, fmev_note_off, 0);
     //fmel_event(&fm_operators[1], fmev_note_off, 0);
     //fmel_event(&fm_operators[2], fmev_note_off, 0);
     render(0.1 * 0.25, clar);
