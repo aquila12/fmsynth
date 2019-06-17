@@ -1,5 +1,5 @@
-// fmcore.c
-// A minimal FM synthesizer
+// fmosc.c
+// FM Oscillator
 
 #include "fmosc.h"
 #include "math.h"

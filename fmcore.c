@@ -6,6 +6,7 @@
 #include "fmcore.h"
 #include "fmosc.h"
 #include "fmamp.h"
+#include "fmadhr.h"
 
 sample_t fm_output;
 
@@ -73,24 +74,27 @@ int fmcontainer_init(fmcontainer_t *co, size_t n_elements) {
 int fmch_init(fmcontainer_t *ch /*, patch */) {
   /* Patch specifies these */
   size_t n_ops = 2;
-  size_t n_adsr = 0; //1;
+  size_t n_adhr = 1;
   size_t n_ampl = 1;
 
-  if(fmcontainer_init(ch, n_ops + n_adsr + n_ampl)) return -1;
+  if(fmcontainer_init(ch, n_ops + n_adhr + n_ampl)) return -1;
 
   /* Patch does this */
   fmel_t **el = ch->p_elements;
   fmosc_t *op0 = calloc(1, sizeof(fmosc_t));
   fmosc_t *op1 = calloc(1, sizeof(fmosc_t));
   fmamp_t *amp = calloc(1, sizeof(fmamp_t));
+  fmadhr_t *adhr = calloc(1, sizeof(fmadhr_t));
   fmosc_configure(op0, 2.0, 0.006, &lfo_osc.el);
   fmosc_configure(op1, 1.0, 0.8, &op0->el);
   fmamp_init(amp, 1);
-  fmamp_connect(amp, 0, &op1->el, SAMPLE_1);
+  fmadhr_init(adhr, 20.0, 10.0, 0.2, 0.7, 3.0, &amp->el);
+  fmamp_connect(amp, 0, &op1->el, 1.0);
   el[0] = &op0->el;
   el[1] = &op1->el;
   // Configure ADSR
   el[2] = &amp->el;
+  el[3] = &adhr->el;
 
   return 0;
 }
@@ -109,7 +113,7 @@ int fminstr_init(fmcontainer_t *instr, size_t n_channels /*, patch */) {
   for(int i=0; i<n_channels; ++i) {
     el[i] = calloc(1, sizeof(fmcontainer_t));
     fmch_init(el[i]);
-    fmamp_connect(amp, i, el[i], SAMPLE_1);
+    fmamp_connect(amp, i, el[i], 1.0);
   }
   el[n_channels] = &amp->el;
 
@@ -145,14 +149,14 @@ int main() {
   const float e4 = 329.6276;
   const float g4 = 391.9954;
 
-  for(int i=0; i<16; ++i) {
+  for(int i=0; i<3; ++i) {
     clar->el.event(&clar->el, fmev_note_on, 0);
     clar->p_elements[0]->event(clar->p_elements[0], fmev_freq_change, &c4);
     clar->p_elements[1]->event(clar->p_elements[1], fmev_freq_change, &e4);
     clar->p_elements[2]->event(clar->p_elements[2], fmev_freq_change, &g4);
-    render(0.9 * 0.25, root);
+    render(5.0 * 0.25, root);
     clar->el.event(&clar->el, fmev_note_off, 0);
-    render(0.1 * 0.25, root);
+    render(1.0 * 0.25, root);
   }
 
   fprintf(stderr, "Finished\n");

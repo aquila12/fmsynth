@@ -1,5 +1,5 @@
-// fmcore.c
-// A minimal FM synthesizer
+// fmamp.c
+// Summing Amplifier
 
 #include "fmamp.h"
 #include "stdlib.h"
@@ -39,13 +39,13 @@ int fmamp_init(fmamp_t *amp, size_t n_inputs) {
   return 0;
 }
 
-void fmamp_connect(fmamp_t *amp, int index, fmel_t *input, sample_t amplitude) {
+void fmamp_connect(fmamp_t *amp, int index, fmel_t *input, float amplitude) {
   if(index >= amp->n_inputs) return;
   amp->inputs[index] = input;
-  amp->ampl[index] = amplitude;
+  amp->ampl[index] = amplitude * SAMPLE_1;
 }
 
-void fmamp_set_amplitude(fmamp_t *amp, int index, sample_t amplitude) {
+void fmamp_set_amplitude(fmamp_t *amp, int index, float amplitude) {
   if(index >= amp->n_inputs) return;
-  amp->ampl[index] = amplitude;
+  amp->ampl[index] = amplitude * SAMPLE_1;
 }

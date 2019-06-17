@@ -12,5 +12,5 @@ typedef struct fmamp_s {
 } fmamp_t;
 
 int fmamp_init(fmamp_t *amp, size_t n_inputs);
-void fmamp_connect(fmamp_t *amp, int index, fmel_t *input, sample_t amplitude);
-void fmamp_set_amplitude(fmamp_t *amp, int index, sample_t amplitude);
+void fmamp_connect(fmamp_t *amp, int index, fmel_t *input, float amplitude);
+void fmamp_set_amplitude(fmamp_t *amp, int index, float amplitude);
