@@ -130,11 +130,11 @@ int fminstr_init(fmcontainer_t *instr, size_t n_channels /*, patch */) {
   return 0;
 }
 
-void render(float duration, fmcontainer_t *ch) {
+void render(float duration, fmcontainer_t *root) {
   int n = RATE * duration;
   for(int i=0; i<n; ++i) {
-    if(ch && ch->el.update) ch->el.update(ch);
-    int16_t s = (ch->el.out * 32) >> 16;
+    root->el.update(root);
+    int16_t s = (root->el.out * 32) >> 16;
     write(1, &s, sizeof(s));
   }
 }
@@ -159,12 +159,12 @@ int main() {
   const float g4 = 391.9954;
 
   for(int i=0; i<16; ++i) {
-    fmcontainer_event(clar, fmev_note_on, 0);
-    fmcontainer_event(clar->p_elements[0], fmev_freq_change, &c4);
-    fmcontainer_event(clar->p_elements[1], fmev_freq_change, &e4);
-    fmcontainer_event(clar->p_elements[2], fmev_freq_change, &g4);
+    clar->el.event(clar, fmev_note_on, 0);
+    clar->p_elements[0]->event(clar->p_elements[0], fmev_freq_change, &c4);
+    clar->p_elements[1]->event(clar->p_elements[1], fmev_freq_change, &e4);
+    clar->p_elements[2]->event(clar->p_elements[2], fmev_freq_change, &g4);
     render(0.9 * 0.25, clar);
-    fmcontainer_event(clar, fmev_note_off, 0);
+    clar->el.event(clar, fmev_note_off, 0);
     render(0.1 * 0.25, clar);
   }
 
