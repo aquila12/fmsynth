@@ -27,8 +27,6 @@ typedef int32_t sample_t;
 
 int8_t sample_number;
 
-typedef struct fminstr_s fminstr_t;
-typedef struct fmch_s fmch_t;
 typedef struct fmel_s fmel_t;
 
 typedef void (*fmel_update_func)(fmel_t *el);
@@ -40,13 +38,10 @@ typedef struct fmel_s {
   sample_t out;
 } fmel_t;
 
-sample_t fmel_resolve(fmel_t *el);
-
-typedef struct fminstr_s {
-  fmch_t *channels;
-  size_t n_channels;
-  fmel_t **elements;
+typedef struct fmcontainer_s {
+  fmel_t el;
+  fmel_t **p_elements;
   size_t n_elements;
-} fminstr_t;
+} fmcontainer_t;
 
 #endif
