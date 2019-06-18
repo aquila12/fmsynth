@@ -10,7 +10,7 @@ void fmamp_update(fmel_t *el) {
 
   for(int i=0; i<amp->n_inputs; ++i) {
     if(amp->inputs[i] && amp->ampl[i])
-      el->out += MUL(amp->inputs[i]->out, amp->ampl[i]);
+      el->out += MUL(*amp->inputs[i], amp->ampl[i]);
   }
 }
 
@@ -30,7 +30,7 @@ int fmamp_init(fmamp_t *amp, size_t n_inputs) {
   //el->event = fmosc_event;
   el->cleanup = fmamp_cleanup;
 
-  amp->inputs = calloc(n_inputs, sizeof(fmel_t*));
+  amp->inputs = calloc(n_inputs, sizeof(sample_t*));
   amp->ampl   = calloc(n_inputs, sizeof(sample_t));
   if(!amp->inputs || !amp->ampl) return -1;
 
@@ -39,7 +39,7 @@ int fmamp_init(fmamp_t *amp, size_t n_inputs) {
   return 0;
 }
 
-void fmamp_connect(fmamp_t *amp, int index, fmel_t *input, float amplitude) {
+void fmamp_connect(fmamp_t *amp, int index, sample_t *input, float amplitude) {
   if(index >= amp->n_inputs) return;
   amp->inputs[index] = input;
   amp->ampl[index] = amplitude * SAMPLE_1;

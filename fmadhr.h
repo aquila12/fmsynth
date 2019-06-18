@@ -18,11 +18,11 @@ typedef enum adhr_e {
 
 typedef struct fmadhr_s {
   fmel_t el;
-  fmel_t *input;
+  sample_t *input;
   sample_t ampl;
   rate_t rate[5];
   sample_t h_level;
   adhr_t mode;
 } fmadhr_t;
 
-int fmadhr_init(fmadhr_t *adhr, float a_rate, float d_rate, float h_rate, float h_level, float r_rate, fmel_t *input);
+int fmadhr_init(fmadhr_t *adhr, float a_rate, float d_rate, float h_rate, float h_level, float r_rate, sample_t *input);

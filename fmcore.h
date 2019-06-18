@@ -34,10 +34,10 @@ typedef void (*fmel_event_func)(fmel_t *el, fmevent_t event, const void *event_d
 typedef void (*fmel_cleanup_func)(fmel_t *el);
 
 typedef struct fmel_s {
+  sample_t out;
   fmel_update_func update;
   fmel_event_func event;
   fmel_cleanup_func cleanup;
-  sample_t out;
 } fmel_t;
 
 int fmel_init(fmel_t *el);

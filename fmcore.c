@@ -24,22 +24,24 @@ int fmel_init(fmel_t *el) {
   return 0;
 }
 
-void fmcontainer_update(fmcontainer_t *co) {
-  fmel_t **el = co->p_elements;
-  if(!el) return;
+void fmcontainer_update(fmel_t *el) {
+  fmcontainer_t *co = (fmcontainer_t*)el;
+  fmel_t **sel = co->p_elements;
+  if(!sel) return;
 
   for(int i=0; i<co->n_elements; ++i) {
-    if(el[i]) el[i]->update(el[i]);
+    if(sel[i]) sel[i]->update(sel[i]);
   }
-  co->el.out = el[co->n_elements - 1]->out;
+  co->el.out = sel[co->n_elements - 1]->out;
 }
 
-void fmcontainer_event(fmcontainer_t *co, fmevent_t event, const void *event_data) {
-  fmel_t **el = co->p_elements;
-  if(!el) return;
+void fmcontainer_event(fmel_t *el, fmevent_t event, const void *event_data) {
+  fmcontainer_t *co = (fmcontainer_t*)el;
+  fmel_t **sel = co->p_elements;
+  if(!sel) return;
 
   for(int i=0; i<co->n_elements; ++i) {
-    if(el[i]) el[i]->event(el[i], event, event_data);
+    if(sel[i]) sel[i]->event(sel[i], event, event_data);
   }
 }
 
@@ -85,11 +87,11 @@ int fmch_init(fmcontainer_t *ch /*, patch */) {
   fmosc_t *op1 = calloc(1, sizeof(fmosc_t));
   fmamp_t *amp = calloc(1, sizeof(fmamp_t));
   fmadhr_t *adhr = calloc(1, sizeof(fmadhr_t));
-  fmosc_configure(op0, 2.0, 0.006, &lfo_osc.el);
-  fmosc_configure(op1, 1.0, 0.8, &op0->el);
+  fmosc_configure(op0, 2.0, 0.006, &lfo_osc.el.out);
+  fmosc_configure(op1, 1.0, 0.8, &op0->el.out);
   fmamp_init(amp, 1);
-  fmadhr_init(adhr, 20.0, 10.0, 0.2, 0.7, 3.0, &amp->el);
-  fmamp_connect(amp, 0, &op1->el, 1.0);
+  fmadhr_init(adhr, 20.0, 10.0, 0.2, 0.7, 3.0, &amp->el.out);
+  fmamp_connect(amp, 0, &op1->el.out, 1.0);
   el[0] = &op0->el;
   el[1] = &op1->el;
   // Configure ADSR
@@ -108,12 +110,14 @@ int fminstr_init(fmcontainer_t *instr, size_t n_channels /*, patch */) {
   /* Patch does this */
   fmel_t **el = instr->p_elements;
   fmamp_t *amp = calloc(n_ampl, sizeof(fmamp_t));
-  fmamp_init(amp, n_channels);
-  //fmosc_configure(...);
+  if(fmamp_init(amp, n_channels)) return -1;
+
+  fmcontainer_t *ch;
   for(int i=0; i<n_channels; ++i) {
-    el[i] = calloc(1, sizeof(fmcontainer_t));
-    fmch_init(el[i]);
-    fmamp_connect(amp, i, el[i], 1.0);
+    ch = calloc(1, sizeof(fmcontainer_t));
+    if(fmch_init(ch)) return -1;
+    el[i] = &ch->el;
+    fmamp_connect(amp, i, &el[i]->out, 1.0);
   }
   el[n_channels] = &amp->el;
 
@@ -141,8 +145,8 @@ int main() {
   fminstr_init(clar, 3);
 
   fmosc_configure(&lfo_osc, 1.0, 0.0, 0);
-  lfo_osc.el.event(&lfo_osc, fmev_freq_change, &lfo_rate);
-  lfo_osc.el.event(&lfo_osc, fmev_note_on, 0);
+  lfo_osc.el.event(&lfo_osc.el, fmev_freq_change, &lfo_rate);
+  lfo_osc.el.event(&lfo_osc.el, fmev_note_on, 0);
   fprintf(stderr, "Initialized\n");
 
   const float c4 = 261.6256;

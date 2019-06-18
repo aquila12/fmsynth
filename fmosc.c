@@ -33,7 +33,7 @@ void fmosc_update(fmel_t *el) {
   int32_t mod_input;
 
   if(osc->beta && osc->input) {
-    mod_input = SAMPLE_1 + MUL(osc->beta, osc->input->out);
+    mod_input = SAMPLE_1 + MUL(osc->beta, *osc->input);
     osc->p += MUL(osc->f0, mod_input);
   } else {
     osc->p += osc->f0;
@@ -51,7 +51,7 @@ void fmosc_event(fmel_t *el, fmevent_t event, const void *event_data) {
   }
 }
 
-void fmosc_configure(fmosc_t *osc, float freq_mul, float mod_index, fmel_t *input) {
+void fmosc_configure(fmosc_t *osc, float freq_mul, float mod_index, sample_t *input) {
   fmel_t *el = &osc->el;
 
   el->update = fmosc_update;

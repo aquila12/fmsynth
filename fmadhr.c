@@ -22,7 +22,7 @@ void fmadhr_update(fmel_t *el) {
       adhr->mode = adhr_hold;
     }
 
-    el->out = MUL(adhr->input->out, adhr->ampl);
+    el->out = MUL(*adhr->input, adhr->ampl);
   }
 }
 
@@ -39,7 +39,7 @@ void fmadhr_event(fmel_t *el, fmevent_t event, const void *event_data) {
   }
 }
 
-int fmadhr_init(fmadhr_t *adhr, float a_rate, float d_rate, float h_rate, float h_level, float r_rate, fmel_t *input) {
+int fmadhr_init(fmadhr_t *adhr, float a_rate, float d_rate, float h_rate, float h_level, float r_rate, sample_t *input) {
   fmel_t *el = &adhr->el;
   fmel_init(el);
 
