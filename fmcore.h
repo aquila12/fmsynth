@@ -24,10 +24,17 @@ typedef int32_t frequency_t;
 #define MUL_INSHIFT (SAMPLE_FRACTION/2)
 #define MUL(s1, s2) ((s1>>MUL_INSHIFT) * (s2>>MUL_INSHIFT))
 
-typedef enum fmevent_e {
+typedef enum fmev_e {
   fmev_note_off = 0,
   fmev_note_on,
   fmev_freq_change = 16
+} fmev_t;
+
+typedef struct fmevent_s {
+  fmev_t type;
+  union {
+    uint8_t note_number;
+  }
 } fmevent_t;
 
 typedef int32_t sample_t;
@@ -37,7 +44,7 @@ int8_t sample_number;
 typedef struct fmel_s fmel_t;
 
 typedef void (*fmel_update_func)(fmel_t *el);
-typedef void (*fmel_event_func)(fmel_t *el, fmevent_t event, const void *event_data);
+typedef void (*fmel_event_func)(fmel_t *el, fmevent_t event);
 typedef void (*fmel_cleanup_func)(fmel_t *el);
 
 typedef struct fmel_s {
