@@ -2,7 +2,6 @@
 // FM Oscillator
 
 #include "fmcore.h"
-#include "fmosc.h"
 #include "stddef.h"
 
 #define NOTE_FRACTION 24

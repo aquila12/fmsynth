@@ -5,6 +5,7 @@
 #include "unistd.h"
 #include "fmcore.h"
 #include "fmosc.h"
+#include "fmfreq.h"
 
 sample_t fm_output;
 
@@ -23,6 +24,7 @@ int main() {
 
   fprintf(stderr, "Initializing\n");
   fmosc_setup();
+  fmfreq_setup();
 
   // Initialize 3 channels
   fminstr_init(clar, 3);
