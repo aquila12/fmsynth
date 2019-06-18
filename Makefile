@@ -4,4 +4,4 @@ fmcore: fmcore.o fmosc.o fmamp.o fmadhr.o
 
 .PHONY: clean
 clean:
-	rm -f *.o
+	rm -f *.o fmcore
