@@ -26,5 +26,5 @@ typedef struct fmosc_s {
   sample_t *input;
 } fmosc_t;
 
-void fmosc_init();
-void fmosc_configure(fmosc_t *osc, float freq_mul, float mod_index, sample_t *input);
+void fmosc_setup();
+void fmosc_init(fmosc_t *osc, float freq_mul, float mod_index, sample_t *input);

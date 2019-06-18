@@ -87,8 +87,8 @@ int fmch_init(fmcontainer_t *ch /*, patch */) {
   fmosc_t *op1 = calloc(1, sizeof(fmosc_t));
   fmamp_t *amp = calloc(1, sizeof(fmamp_t));
   fmadhr_t *adhr = calloc(1, sizeof(fmadhr_t));
-  fmosc_configure(op0, 2.0, 0.006, &lfo_osc.el.out);
-  fmosc_configure(op1, 1.0, 0.8, &op0->el.out);
+  fmosc_init(op0, 2.0, 0.006, &lfo_osc.el.out);
+  fmosc_init(op1, 1.0, 0.8, &op0->el.out);
   fmamp_init(amp, 1);
   fmadhr_init(adhr, 20.0, 10.0, 0.2, 0.7, 3.0, &amp->el.out);
   fmamp_connect(amp, 0, &op1->el.out, 1.0);
@@ -139,12 +139,12 @@ int main() {
   float lfo_rate = 10.0;
 
   fprintf(stderr, "Initializing\n");
-  fmosc_init();
+  fmosc_setup();
 
   // Initialize 3 channels
   fminstr_init(clar, 3);
 
-  fmosc_configure(&lfo_osc, 1.0, 0.0, 0);
+  fmosc_init(&lfo_osc, 1.0, 0.0, 0);
   lfo_osc.el.event(&lfo_osc.el, fmev_freq_change, &lfo_rate);
   lfo_osc.el.event(&lfo_osc.el, fmev_note_on, 0);
   fprintf(stderr, "Initialized\n");
