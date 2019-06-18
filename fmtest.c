@@ -31,17 +31,14 @@ int main() {
 
   fprintf(stderr, "Initialized\n");
 
-  const float c4 = 261.6256;
-  const float e4 = 329.6276;
-  const float g4 = 391.9954;
+  uint8_t c4=60, e4=64, g4=67;
 
   for(int i=0; i<3; ++i) {
-    clar->el.event(&clar->el, fmev_note_on, 0);
-    clar->p_elements[0]->event(clar->p_elements[0], fmev_freq_change, &c4);
-    clar->p_elements[1]->event(clar->p_elements[1], fmev_freq_change, &e4);
-    clar->p_elements[2]->event(clar->p_elements[2], fmev_freq_change, &g4);
+    clar->p_elements[2]->event(clar->p_elements[2], (fmevent_t){.type=fmev_note_on, .note_number=c4});
+    clar->p_elements[3]->event(clar->p_elements[3], (fmevent_t){.type=fmev_note_on, .note_number=e4});
+    clar->p_elements[4]->event(clar->p_elements[4], (fmevent_t){.type=fmev_note_on, .note_number=g4});
     render(5.0 * 0.25, root);
-    clar->el.event(&clar->el, fmev_note_off, 0);
+    clar->el.event(&clar->el, (fmevent_t){.type=fmev_note_off});
     render(1.0 * 0.25, root);
   }
 

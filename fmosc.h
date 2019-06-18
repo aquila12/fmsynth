@@ -13,12 +13,12 @@
 
 typedef struct fmosc_s {
   fmel_t el;
-  frequency_t f0;
+  frequency_t *f0;
   phase_t p;
-  float fmul;
+  sample_t fmul;
   sample_t beta;
   sample_t *input;
 } fmosc_t;
 
 void fmosc_setup();
-void fmosc_init(fmosc_t *osc, float freq_mul, float mod_index, sample_t *input);
+void fmosc_init(fmosc_t *osc, float freq_mul, float mod_index, frequency_t *f0, sample_t *input);

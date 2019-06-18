@@ -25,12 +25,12 @@ frequency_t frequency(note_t note) {
 //   fmfreq_t *fq=(fmfreq_t*)el;
 // }
 
-void fmfreq_event(fmel_t *el, fmevent_t event, const void *event_data) {
+void fmfreq_event(fmel_t *el, fmevent_t event) {
   fmfreq_t *fq=(fmfreq_t*)el;
 
-  switch(event) {
+  switch(event.type) {
     case fmev_note_on:
-    fq->note = *((int*)event_data) << NOTE_FRACTION;
+    fq->note = event.note_number << NOTE_FRACTION;
     fq->el.f = frequency(fq->note);
     break;
   }

@@ -26,10 +26,10 @@ void fmadhr_update(fmel_t *el) {
   }
 }
 
-void fmadhr_event(fmel_t *el, fmevent_t event, const void *event_data) {
+void fmadhr_event(fmel_t *el, fmevent_t event) {
   fmadhr_t *adhr = (fmadhr_t*)el;
 
-  switch(event) {
+  switch(event.type) {
     case fmev_note_on:
     adhr->mode = adhr_attack;
     break;

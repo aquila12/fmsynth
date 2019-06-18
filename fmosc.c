@@ -29,37 +29,31 @@ sample_t sine(phase_t theta) {
 
 void fmosc_update(fmel_t *el) {
   fmosc_t *osc = (fmosc_t*)el;
-  int32_t mod_input;
+  sample_t mod_input;
+  frequency_t freq_input;
 
-  if(osc->beta && osc->input) {
+  if(!osc->f0) return;
+  freq_input = MUL(*osc->f0, osc->fmul);
+
+  if(osc->beta && osc->input && osc->f0) {
     mod_input = SAMPLE_1 + MUL(osc->beta, *osc->input);
-    osc->p += MUL(osc->f0, mod_input);
-  } else {
-    osc->p += osc->f0;
+    osc->p += MUL(freq_input, mod_input);
+  } else if(osc->f0) {
+    osc->p += freq_input;
   }
 
   el->out = sine(osc->p);
 }
 
-void fmosc_event(fmel_t *el, fmevent_t event, const void *event_data) {
-  fmosc_t *osc = (fmosc_t*)el;
-  switch(event) {
-    case fmev_freq_change:
-    osc->f0 = *((float*)event_data) * osc->fmul * HERTZ;
-    break;
-  }
-}
-
-void fmosc_init(fmosc_t *osc, float freq_mul, float mod_index, sample_t *input) {
+void fmosc_init(fmosc_t *osc, float freq_mul, float mod_index, frequency_t *f0, sample_t *input) {
   fmel_t *el = &osc->el;
   fmel_init(el);
 
   el->update = fmosc_update;
-  el->event = fmosc_event;
 
   osc->p = 0;
-  osc->f0 = 0;
-  osc->fmul = freq_mul;
+  osc->f0 = f0;
+  osc->fmul = freq_mul * SAMPLE_1;
   osc->beta = mod_index * SAMPLE_1;
   osc->input = input;
 }

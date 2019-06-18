@@ -34,7 +34,7 @@ typedef struct fmevent_s {
   fmev_t type;
   union {
     uint8_t note_number;
-  }
+  };
 } fmevent_t;
 
 typedef int32_t sample_t;
