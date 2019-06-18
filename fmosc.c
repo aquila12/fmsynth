@@ -8,7 +8,6 @@
 sample_t sine_buf[SINE_BUFFERSIZE];
 
 void fmosc_setup() {
-  double phase;
   double k = 3.14159265359 / (double)(2*SINE_BUFFERSIZE);
   double a = (double) SINE_AMPLITUDE;
 
@@ -53,6 +52,7 @@ void fmosc_event(fmel_t *el, fmevent_t event, const void *event_data) {
 
 void fmosc_init(fmosc_t *osc, float freq_mul, float mod_index, sample_t *input) {
   fmel_t *el = &osc->el;
+  fmel_init(el);
 
   el->update = fmosc_update;
   el->event = fmosc_event;

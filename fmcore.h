@@ -9,6 +9,13 @@
 
 #define RATE 48000
 
+#define PHASE_BITS 32
+
+#define HERTZ ((float)UINT32_MAX / (float)RATE)
+
+typedef uint32_t phase_t;
+typedef int32_t frequency_t;
+
 #define SAMPLE_FRACTION 24
 #define SAMPLE_1 (1<<SAMPLE_FRACTION)
 
@@ -34,7 +41,10 @@ typedef void (*fmel_event_func)(fmel_t *el, fmevent_t event, const void *event_d
 typedef void (*fmel_cleanup_func)(fmel_t *el);
 
 typedef struct fmel_s {
-  sample_t out;
+  union {
+    sample_t out;
+    frequency_t f;
+  };
   fmel_update_func update;
   fmel_event_func event;
   fmel_cleanup_func cleanup;
