@@ -33,13 +33,15 @@ int main() {
 
   uint8_t c4=60, e4=64, g4=67;
 
-  for(int i=0; i<3; ++i) {
-    clar->p_elements[2]->event(clar->p_elements[2], (fmevent_t){.type=fmev_note_on, .note_number=c4});
-    clar->p_elements[3]->event(clar->p_elements[3], (fmevent_t){.type=fmev_note_on, .note_number=e4});
-    clar->p_elements[4]->event(clar->p_elements[4], (fmevent_t){.type=fmev_note_on, .note_number=g4});
-    render(5.0 * 0.25, root);
+  uint8_t maj_scale[]={0,2,4,5,7,9,11,12,14,16};
+
+  for(int i=0; i<8; ++i) {
+    clar->p_elements[2]->event(clar->p_elements[2], (fmevent_t){.type=fmev_note_on, .note_number=c4-12+maj_scale[i]});
+    clar->p_elements[3]->event(clar->p_elements[3], (fmevent_t){.type=fmev_note_on, .note_number=c4-12+maj_scale[i+2]});
+    clar->p_elements[4]->event(clar->p_elements[4], (fmevent_t){.type=fmev_note_on, .note_number=c4+maj_scale[7-i]});
+    render(0.9 * 0.25, root);
     clar->el.event(&clar->el, (fmevent_t){.type=fmev_note_off});
-    render(1.0 * 0.25, root);
+    render(0.1 * 0.25, root);
   }
 
   fprintf(stderr, "Finished\n");
