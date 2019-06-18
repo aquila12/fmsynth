@@ -1,6 +1,6 @@
 LDLIBS+=-lm
 
-fmcore: fmcore.o fmosc.o fmamp.o fmadhr.o
+fmtest: fmtest.o fmcore.o fmosc.o fmamp.o fmadhr.o
 
 .PHONY: clean
 clean:

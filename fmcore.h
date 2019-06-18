@@ -48,4 +48,8 @@ typedef struct fmcontainer_s {
   size_t n_elements;
 } fmcontainer_t;
 
+int fmcontainer_init(fmcontainer_t *co, size_t n_elements);
+//int fmch_init(fmcontainer_t *ch /*, patch */);
+int fminstr_init(fmcontainer_t *instr, size_t n_channels /*, patch */);
+
 #endif
