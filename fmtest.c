@@ -37,11 +37,13 @@ int main() {
   uint8_t maj_scale[]={0,2,4,5,7,9,11,12,14,16};
 
   for(int i=0; i<8; ++i) {
-    clar->sub.p_elements[2]->event(clar->sub.p_elements[2], (fmevent_t){.type=fmev_note_on, .note_number=c4-12+maj_scale[i]});
-    clar->sub.p_elements[3]->event(clar->sub.p_elements[3], (fmevent_t){.type=fmev_note_on, .note_number=c4-12+maj_scale[i+2]});
-    clar->sub.p_elements[4]->event(clar->sub.p_elements[4], (fmevent_t){.type=fmev_note_on, .note_number=c4+maj_scale[7-i]});
+    clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_on, .note_number=c4-12+maj_scale[i]});
+    clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_on, .note_number=c4-12+maj_scale[i+2]});
+    clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_on, .note_number=c4+maj_scale[7-i]});
     render(0.9 * 0.25, root);
-    clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_off});
+    clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_off, .note_number=c4-12+maj_scale[i]});
+    clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_off, .note_number=c4-12+maj_scale[i+2]});
+    clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_off, .note_number=c4+maj_scale[7-i]});
     render(0.1 * 0.25, root);
   }
 

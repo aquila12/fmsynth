@@ -53,6 +53,7 @@ void fminstr_event(fmel_t *el, fmevent_t event) {
     instr->ch[n].on = 0;
     sel = instr->sub.p_elements[n + instr->ch_base];
     sel->event(sel, event);
+    break;
 
     default:
     fmsub_event(el, event);
@@ -66,8 +67,12 @@ int fminstr_init(fminstr_t *instr, size_t n_channels /*, patch */) {
 
   if(fmsub_init(&instr->sub, n_el + n_osc + n_channels + n_ampl)) return -1;
 
+  instr->sub.el.event = fminstr_event;
+
   instr->ch = calloc(n_channels, sizeof(fmchstat_t));
   if(!instr->ch) return -1;
+  instr->n_channels = n_channels;
+
   int n=0;
 
   /* Patch does this */
