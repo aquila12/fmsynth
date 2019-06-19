@@ -100,37 +100,3 @@ int fmch_init(fmsub_t *ch /*, patch */, sample_t *lfo_out) {
 
   return 0;
 }
-
-int fminstr_init(fmsub_t *instr, size_t n_channels /*, patch */) {
-  size_t n_el = 1; /* LFO frequency */
-  size_t n_osc = 1; /* "Global" LFOs */
-  size_t n_ampl = 1; /* Channel mixer */
-  int n=0;
-
-  if(fmsub_init(instr, n_el + n_osc + n_channels + n_ampl)) return -1;
-
-  /* Patch does this */
-  fmel_t *lfo_f = calloc(1, sizeof(fmel_t));
-  fmel_init(lfo_f);
-  lfo_f->f = 1.5 * HERTZ;
-
-  fmosc_t *osc = calloc(1, sizeof(fmosc_t));
-  fmosc_init(osc, 1.0, 0.0, &lfo_f->f, 0);
-
-  fmel_t **el = instr->p_elements;
-  el[n++] = lfo_f;
-  el[n++] = &osc->el;
-  fmamp_t *amp = calloc(1, sizeof(fmamp_t));
-  if(fmamp_init(amp, n_channels)) return -1;
-
-  fmsub_t *ch;
-  for(int i=0; i<n_channels; ++i) {
-    ch = calloc(1, sizeof(fmsub_t));
-    if(fmch_init(ch, &osc->el.out)) return -1;
-    fmamp_connect(amp, i, &ch->el.out, 1.0);
-    el[n++] = &ch->el;
-  }
-  el[n++] = &amp->el;
-
-  return 0;
-}

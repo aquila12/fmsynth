@@ -66,7 +66,9 @@ typedef struct fmsub_s {
 } fmsub_t;
 
 int fmsub_init(fmsub_t *co, size_t n_elements);
-//int fmch_init(fmsub_t *ch /*, patch */);
-int fminstr_init(fmsub_t *instr, size_t n_channels /*, patch */);
+void fmsub_cleanup(fmel_t *el);
+void fmsub_event(fmel_t *el, fmevent_t event);
+int fmch_init(fmsub_t *ch /*, patch */, sample_t *lfo);
+
 
 #endif
