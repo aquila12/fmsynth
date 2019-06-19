@@ -59,14 +59,14 @@ typedef struct fmel_s {
 
 int fmel_init(fmel_t *el);
 
-typedef struct fmcontainer_s {
+typedef struct fmsub_s {
   fmel_t el;
   fmel_t **p_elements;
   size_t n_elements;
-} fmcontainer_t;
+} fmsub_t;
 
-int fmcontainer_init(fmcontainer_t *co, size_t n_elements);
-//int fmch_init(fmcontainer_t *ch /*, patch */);
-int fminstr_init(fmcontainer_t *instr, size_t n_channels /*, patch */);
+int fmsub_init(fmsub_t *co, size_t n_elements);
+//int fmch_init(fmsub_t *ch /*, patch */);
+int fminstr_init(fmsub_t *instr, size_t n_channels /*, patch */);
 
 #endif

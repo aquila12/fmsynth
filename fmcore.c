@@ -20,8 +20,8 @@ int fmel_init(fmel_t *el) {
   return 0;
 }
 
-void fmcontainer_update(fmel_t *el) {
-  fmcontainer_t *co = (fmcontainer_t*)el;
+void fmsub_update(fmel_t *el) {
+  fmsub_t *co = (fmsub_t*)el;
   fmel_t **sel = co->p_elements;
   if(!sel) return;
 
@@ -31,8 +31,8 @@ void fmcontainer_update(fmel_t *el) {
   co->el.out = sel[co->n_elements - 1]->out;
 }
 
-void fmcontainer_event(fmel_t *el, fmevent_t event) {
-  fmcontainer_t *co = (fmcontainer_t*)el;
+void fmsub_event(fmel_t *el, fmevent_t event) {
+  fmsub_t *co = (fmsub_t*)el;
   fmel_t **sel = co->p_elements;
   if(!sel) return;
 
@@ -41,8 +41,8 @@ void fmcontainer_event(fmel_t *el, fmevent_t event) {
   }
 }
 
-void fmcontainer_cleanup(fmel_t *el) {
-  fmcontainer_t *co = (fmcontainer_t*)el;
+void fmsub_cleanup(fmel_t *el) {
+  fmsub_t *co = (fmsub_t*)el;
 
   if(co->p_elements) {
     for(int i=0; i<co->n_elements; ++i) {
@@ -56,27 +56,27 @@ void fmcontainer_cleanup(fmel_t *el) {
   co->p_elements = 0;
 }
 
-int fmcontainer_init(fmcontainer_t *co, size_t n_elements) {
+int fmsub_init(fmsub_t *co, size_t n_elements) {
   fmel_t *el = &co->el;
   if(fmel_init(el)) return -1;
 
-  el->update  = fmcontainer_update;
-  el->event   = fmcontainer_event;
-  el->cleanup = fmcontainer_cleanup;
+  el->update  = fmsub_update;
+  el->event   = fmsub_event;
+  el->cleanup = fmsub_cleanup;
 
   co->p_elements = calloc(n_elements, sizeof(fmel_t*));
   co->n_elements = n_elements;
   return (co->p_elements ? 0 : -1);
 }
 
-int fmch_init(fmcontainer_t *ch /*, patch */, sample_t *lfo_out) {
+int fmch_init(fmsub_t *ch /*, patch */, sample_t *lfo_out) {
   /* Patch specifies these */
   size_t n_freq = 1;
   size_t n_ops = 2;
   size_t n_adhr = 1;
   size_t n_ampl = 1;
 
-  if(fmcontainer_init(ch, 1 + n_ops + n_adhr + n_ampl)) return -1;
+  if(fmsub_init(ch, 1 + n_ops + n_adhr + n_ampl)) return -1;
 
   /* Patch does this */
   fmel_t **el = ch->p_elements;
@@ -101,19 +101,19 @@ int fmch_init(fmcontainer_t *ch /*, patch */, sample_t *lfo_out) {
   return 0;
 }
 
-int fminstr_init(fmcontainer_t *instr, size_t n_channels /*, patch */) {
+int fminstr_init(fmsub_t *instr, size_t n_channels /*, patch */) {
   size_t n_el = 1; /* LFO frequency */
   size_t n_osc = 1; /* "Global" LFOs */
   size_t n_ampl = 1; /* Channel mixer */
   int n=0;
 
-  if(fmcontainer_init(instr, n_el + n_osc + n_channels + n_ampl)) return -1;
+  if(fmsub_init(instr, n_el + n_osc + n_channels + n_ampl)) return -1;
 
   /* Patch does this */
   fmel_t *lfo_f = calloc(1, sizeof(fmel_t));
   fmel_init(lfo_f);
   lfo_f->f = 1.5 * HERTZ;
-  
+
   fmosc_t *osc = calloc(1, sizeof(fmosc_t));
   fmosc_init(osc, 1.0, 0.0, &lfo_f->f, 0);
 
@@ -123,9 +123,9 @@ int fminstr_init(fmcontainer_t *instr, size_t n_channels /*, patch */) {
   fmamp_t *amp = calloc(1, sizeof(fmamp_t));
   if(fmamp_init(amp, n_channels)) return -1;
 
-  fmcontainer_t *ch;
+  fmsub_t *ch;
   for(int i=0; i<n_channels; ++i) {
-    ch = calloc(1, sizeof(fmcontainer_t));
+    ch = calloc(1, sizeof(fmsub_t));
     if(fmch_init(ch, &osc->el.out)) return -1;
     fmamp_connect(amp, i, &ch->el.out, 1.0);
     el[n++] = &ch->el;

@@ -19,7 +19,7 @@ void render(float duration, fmel_t *root) {
 }
 
 int main() {
-  fmcontainer_t *clar = calloc(1, sizeof(fmcontainer_t));
+  fmsub_t *clar = calloc(1, sizeof(fmsub_t));
   fmel_t *root = &clar->el;
 
   fprintf(stderr, "Initializing\n");
