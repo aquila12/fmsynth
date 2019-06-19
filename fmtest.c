@@ -10,8 +10,7 @@
 
 sample_t fm_output;
 
-void render(float duration, fmel_t *root) {
-  int n = RATE * duration;
+void render(int n, fmel_t *root) {
   for(int i=0; i<n; ++i) {
     root->update(root);
     int16_t s = (root->out * 32) >> 16;
@@ -19,9 +18,27 @@ void render(float duration, fmel_t *root) {
   }
 }
 
+#define NOTEON fmev_note_on
+#define NOTEOFF fmev_note_off
+
+uint32_t now = 0;
+fmel_t *_root = 0;
+
+void event(uint32_t when, fmev_t what, int8_t note) {
+  if(when > now) render(when - now, _root);
+  now = when;
+
+  _root->event(_root, (fmevent_t){.type=what, .note_number=note});
+}
+
+void canyon() {
+#include "ripped-midi.inc"
+}
+
 int main() {
   fminstr_t *clar = calloc(1, sizeof(fminstr_t));
   fmel_t *root = &clar->sub.el;
+  _root = root;
 
   fprintf(stderr, "Initializing\n");
   fmosc_setup();
@@ -32,20 +49,22 @@ int main() {
 
   fprintf(stderr, "Initialized\n");
 
-  uint8_t c4=60, e4=64, g4=67;
+  canyon();
 
-  uint8_t maj_scale[]={0,2,4,5,7,9,11,12,14,16};
+  // uint8_t c4=60, e4=64, g4=67;
 
-  for(int i=0; i<8; ++i) {
-    clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_on, .note_number=c4-12+maj_scale[i]});
-    clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_on, .note_number=c4-12+maj_scale[i+2]});
-    clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_on, .note_number=c4+maj_scale[7-i]});
-    render(0.9 * 0.25, root);
-    clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_off, .note_number=c4-12+maj_scale[i]});
-    clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_off, .note_number=c4-12+maj_scale[i+2]});
-    clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_off, .note_number=c4+maj_scale[7-i]});
-    render(0.1 * 0.25, root);
-  }
+  // uint8_t maj_scale[]={0,2,4,5,7,9,11,12,14,16};
+
+  // for(int i=0; i<8; ++i) {
+    // clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_on, .note_number=c4-12+maj_scale[i]});
+    // clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_on, .note_number=c4-12+maj_scale[i+2]});
+    // clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_on, .note_number=c4+maj_scale[7-i]});
+    // render(0.9 * 0.25 * RATE, root);
+    // clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_off, .note_number=c4-12+maj_scale[i]});
+    // clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_off, .note_number=c4-12+maj_scale[i+2]});
+    // clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_off, .note_number=c4+maj_scale[7-i]});
+    // render(0.1 * 0.25 * RATE, root);
+  // }
 
   fprintf(stderr, "Finished\n");
   return 0;
