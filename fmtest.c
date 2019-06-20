@@ -10,12 +10,21 @@
 
 sample_t fm_output;
 
+#define BUFSIZE (RATE / 10)
+
 void render(int n, fmel_t *root) {
+  int16_t outbuf[BUFSIZE];
+  int j=0;
+
   for(int i=0; i<n; ++i) {
     root->update(root);
-    int16_t s = (root->out * 32) >> 16;
-    write(1, &s, sizeof(s));
+    outbuf[j++] = (root->out * 32) >> 16;
+    if(j==BUFSIZE) {
+      write(1, outbuf, j * sizeof(int16_t)); // Ignoring failed writes
+      j=0;
+    }
   }
+  write(1, outbuf, j * sizeof(int16_t));
 }
 
 #define NOTEON fmev_note_on
