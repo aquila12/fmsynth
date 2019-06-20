@@ -1,0 +1,3 @@
+*.o
+/fmtest
+/ripped-midi.inc
