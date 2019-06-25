@@ -18,7 +18,6 @@ typedef union midifilter_u {
 typedef struct midiroute_s {
   midifilter_t mask, value;
   fmel_t *target;
-  uint8_t remove;
 } midiroute_t;
 
 void mrouter_insert(midifilter_t mask, midifilter_t value, fmel_t *target);
