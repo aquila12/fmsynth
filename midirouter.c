@@ -2,6 +2,7 @@
 // MIDI event router
 
 #include "midirouter.h"
+#include "stdio.h"
 
 #define ROUTER_SIZE 1024
 
@@ -17,7 +18,7 @@ void mrouter_insert(midifilter_t mask, midifilter_t value, fmel_t *target) {
     r->value = value;
     r->target = target;
   }
-  //TODO: Handle full table
+  fprintf(stderr, "MIDI Routing Table Full\n");
 }
 
 void mrouter_delete(midifilter_t mask, midifilter_t value) {
@@ -64,4 +65,5 @@ void mrouter_route(midifilter_t input, fmevent_t *event) {
       return;
     }
   }
+  fprintf(stderr, "MIDI Route not Matched - Dropping Event\n");
 }
