@@ -26,7 +26,7 @@ void fmsub_update(fmel_t *el) {
   if(!sel) return;
 
   for(int i=0; i<co->n_elements; ++i) {
-    if(sel[i]) sel[i]->update(sel[i]);
+    if(sel[i]) fmel_i_update(sel[i]);
   }
   co->el.out = sel[co->n_elements - 1]->out;
 }
@@ -37,7 +37,7 @@ void fmsub_event(fmel_t *el, fmevent_t event) {
   if(!sel) return;
 
   for(int i=0; i<co->n_elements; ++i) {
-    if(sel[i]) sel[i]->event(sel[i], event);
+    if(sel[i]) fmel_i_event(sel[i], event);
   }
 }
 
@@ -46,7 +46,7 @@ void fmsub_cleanup(fmel_t *el) {
 
   if(co->p_elements) {
     for(int i=0; i<co->n_elements; ++i) {
-      co->p_elements[i]->cleanup(co->p_elements[i]);
+      fmel_i_cleanup(co->p_elements[i]);
       free(co->p_elements[i]);
     }
     free(co->p_elements);

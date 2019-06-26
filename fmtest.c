@@ -17,7 +17,7 @@ void render(int n, fmel_t *root) {
   int j=0;
 
   for(int i=0; i<n; ++i) {
-    root->update(root);
+    fmel_i_update(root);
     outbuf[j++] = (root->out * 32) >> 16;
     if(j==BUFSIZE) {
       write(1, outbuf, j * sizeof(int16_t)); // Ignoring failed writes
@@ -37,7 +37,7 @@ void event(uint32_t when, fmev_t what, int8_t note) {
   if(when > now) render(when - now, _root);
   now = when;
 
-  _root->event(_root, (fmevent_t){.type=what, .note_number=note});
+  fmel_i_event(_root, (fmevent_t){.type=what, .note_number=note});
 }
 
 void canyon() {

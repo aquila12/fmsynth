@@ -59,6 +59,10 @@ typedef struct fmel_s {
 
 int fmel_init(fmel_t *el);
 
+inline void fmel_i_update(fmel_t *el) { el->update(el); }
+inline void fmel_i_event(fmel_t *el, fmevent_t event) { el->event(el, event); }
+inline void fmel_i_cleanup(fmel_t *el) { el->cleanup(el); }
+
 typedef struct fmsub_s {
   fmel_t el;
   fmel_t **p_elements;

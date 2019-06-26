@@ -43,7 +43,7 @@ void fminstr_event(fmel_t *el, fmevent_t event) {
     instr->ch[n].note = event.note_number;
     instr->ch[n].on = 1;
     sel = instr->sub.p_elements[n + instr->ch_base];
-    sel->event(sel, event);
+    fmel_i_event(sel, event);
     break;
 
     case fmev_note_off:
@@ -52,7 +52,7 @@ void fminstr_event(fmel_t *el, fmevent_t event) {
     if(n < 0) return;
     instr->ch[n].on = 0;
     sel = instr->sub.p_elements[n + instr->ch_base];
-    sel->event(sel, event);
+    fmel_i_event(sel, event);
     break;
 
     default:

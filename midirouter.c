@@ -60,7 +60,7 @@ void mrouter_route(midifilter_t input, fmevent_t *event) {
     mask = route[i].mask.v;
     value = route[i].value.v;
     if((input.v & mask) == value) {
-      route[i].target->event(route[i].target, *event);
+      fmel_i_event(route[i].target, *event);
       return;
     }
   }
