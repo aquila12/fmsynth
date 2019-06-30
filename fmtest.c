@@ -33,7 +33,8 @@ void render(int n, fmel_t *root) {
 uint32_t now = 0;
 fmel_t *_root = 0;
 
-void event(uint32_t when, fmev_t what, int8_t note) {
+void event(uint32_t when, fmev_t what, int8_t channel, int8_t note, int8_t velocity) {
+  /* FIXME: Ignored: channel, velocity */
   if(when > now) render(when - now, _root);
   now = when;
 
