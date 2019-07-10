@@ -7,6 +7,7 @@
 #include "fmosc.h"
 #include "fmfreq.h"
 #include "fminstr.h"
+#include "midirouter.h"
 
 sample_t fm_output;
 
@@ -38,7 +39,10 @@ void event(uint32_t when, fmev_t what, int8_t channel, int8_t note, int8_t veloc
   if(when > now) render(when - now, _root);
   now = when;
 
-  fmel_i_event(_root, (fmevent_t){.type=what, .note_number=note});
+  midifilter_t descriptor = {.m_chan=channel, .m_prog=1, .m_note=note};
+  fmevent_t event = {.type=what, .note_number=note};
+
+  mrouter_route(descriptor, &event);
 }
 
 void canyon() {
@@ -49,6 +53,12 @@ int main() {
   fminstr_t *clar = calloc(1, sizeof(fminstr_t));
   fmel_t *root = &clar->sub.el;
   _root = root;
+
+  mrouter_insert(
+    (midifilter_t){.m_chan=0, .m_prog=0, .m_note=0},
+    (midifilter_t){.m_chan=0, .m_prog=0, .m_note=0},
+    _root
+  );
 
   fprintf(stderr, "Initializing\n");
   fmosc_setup();

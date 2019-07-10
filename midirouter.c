@@ -17,8 +17,9 @@ void mrouter_insert(midifilter_t mask, midifilter_t value, fmel_t *target) {
     r->mask = mask;
     r->value = value;
     r->target = target;
+  } else {
+    fprintf(stderr, "MIDI Routing Table Full\n");
   }
-  fprintf(stderr, "MIDI Routing Table Full\n");
 }
 
 void mrouter_delete(midifilter_t mask, midifilter_t value) {
