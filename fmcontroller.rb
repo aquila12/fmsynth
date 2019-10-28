@@ -113,13 +113,12 @@ class FMController
   end
 
   def midi_pitchbend(event)
-    e = event
-    @pitch_bend[e.channel] = e.value
-    @active_notes[e.channel].each do |note|
-      slot = _midi_slot(e.channel, note)
-      msg_slot_freq(slot, e.channel, note)
+    @pitch_bend[event.channel] = event.value
+    @active_notes[event.channel].each do |note|
+      slot = _midi_slot(event.channel, note)
+      msg_slot_freq(slot, event.channel, note)
     rescue FMNoActiveNoteError => e
-      warn "FM Pitchbent note no longer active: #{e.note}"
+      warn "FM Pitchbent note no longer active: #{note}"
     end
   end
 
