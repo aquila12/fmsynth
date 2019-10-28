@@ -56,7 +56,7 @@ class FMController
 
   def _midi_slot(channel, note, action: :none)
     instrument = get_instrument(channel, note)
-    chnote = "#{channel}.#{note}"
+    chnote = channel << 8 + note
     slot = case action
            when :take
              take_slot(instrument, chnote)
