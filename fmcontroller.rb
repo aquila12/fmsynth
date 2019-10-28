@@ -31,6 +31,7 @@ class FMController
   end
 
   def prepare_instrument(instrument, first_slot, num_slots)
+    # NB: these may be slot numbers returned from the kernel
     last_slot = first_slot + num_slots - 1
     @instr_free_slots[instrument] += (first_slot..last_slot)
   end
@@ -50,12 +51,20 @@ class FMController
   def release_slot(instrument, note)
     slot = @instr_note_slot[instrument].delete note
     @instr_free_slots[instrument].add slot if slot
+    slot
   end
 
   def _midi_slot(channel, note, action: :none)
     instrument = get_instrument(channel, note)
-    slot = action == :take ? take_slot(instrument, note) : @instr_note_slot[instrument][note]
-    release_slot(instrument, slot) if :action == :release
+    chnote = "#{channel}.#{note}"
+    slot = case action
+           when :take
+             take_slot(instrument, chnote)
+           when :release
+             release_slot(instrument, chnote)
+           else
+             @instr_note_slot[instrument][chnote]
+           end
     slot || raise(FMNoActiveNoteError)
   end
 
