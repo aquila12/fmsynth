@@ -12,6 +12,7 @@ size_t n=0;
 
 void mrouter_insert(midifilter_t mask, midifilter_t value, fmel_t *target) {
   if(n<ROUTER_SIZE) {
+    fprintf(stderr, "Insert route %x/%x -> %d\n", value.v, mask.v, n);
     midiroute_t *r = &route[n++];
 
     r->mask = mask;
@@ -62,6 +63,7 @@ void mrouter_route(midifilter_t input, fmevent_t *event) {
     mask = route[i].mask.v;
     value = route[i].value.v;
     if((input.v & mask) == value) {
+      fprintf(stderr, "Route %d %d %d %x -> %d\n", input.m_chan, input.m_prog, input.m_note, input.v, i);
       fmel_i_event(route[i].target, *event);
       return;
     }

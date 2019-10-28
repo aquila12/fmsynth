@@ -5,6 +5,7 @@
 #include "fmosc.h"
 #include "fmamp.h"
 #include "stdlib.h"
+#include "midirouter.h"
 
 void fminstr_cleanup(fmel_t *el) {
   fminstr_t *instr=(fminstr_t*)el;
@@ -36,23 +37,21 @@ void fminstr_event(fmel_t *el, fmevent_t event) {
 
   switch(event.type) {
     case fmev_note_on:
-    n = fminstr_find_note(instr, event.note_number);
-    if(n < 0) n = fminstr_find_off(instr);
+    n = fminstr_find_off(instr);
     /* TODO: Don't just drop a note-on if we run out of channels */
     if(n < 0) return;
     instr->ch[n].note = event.note_number;
     instr->ch[n].on = 1;
     sel = instr->sub.p_elements[n + instr->ch_base];
+    mrouter_insert(
+      (midifilter_t){.m_note=0x7f, .m_prog=0x7f, .m_chan=0xf},
+      (midifilter_t){.m_note=event.note_number, .m_prog=1, .m_chan=1},
+      sel
+    );
     fmel_i_event(sel, event);
     break;
 
     case fmev_note_off:
-    n = fminstr_find_note(instr, event.note_number);
-
-    if(n < 0) return;
-    instr->ch[n].on = 0;
-    sel = instr->sub.p_elements[n + instr->ch_base];
-    fmel_i_event(sel, event);
     break;
 
     default:
