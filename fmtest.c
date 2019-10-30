@@ -1,25 +1,15 @@
-// fmtest.c
-// FM Test program
-
-#include "stdlib.h"
+#include "fmpatch.h"
 #include "unistd.h"
-#include "fmcore.h"
-#include "fmosc.h"
-#include "fmfreq.h"
-#include "fminstr.h"
-#include "midirouter.h"
-
-sample_t fm_output;
 
 #define BUFSIZE (RATE / 10)
+#define GAIN 32
 
-void render(int n, fmel_t *root) {
+void render(int n, fmpatch_t *pat) {
   int16_t outbuf[BUFSIZE];
   int j=0;
 
   for(int i=0; i<n; ++i) {
-    fmel_i_update(root);
-    outbuf[j++] = (root->out * 32) >> 16;
+    outbuf[j++] = fmpatch_sample(pat) * GAIN >> 16;
     if(j==BUFSIZE) {
       write(1, outbuf, j * sizeof(int16_t)); // Ignoring failed writes
       j=0;
@@ -28,64 +18,37 @@ void render(int n, fmel_t *root) {
   write(1, outbuf, j * sizeof(int16_t));
 }
 
-#define NOTEON fmev_note_on
-#define NOTEOFF fmev_note_off
+int main()
+{
+  fmpatch_t pat;
 
-uint32_t now = 0;
-fmel_t *_root = 0;
+  fmfunc_setup();
 
-void event(uint32_t when, fmev_t what, int8_t channel, int8_t note, int8_t velocity) {
-  /* FIXME: Ignored: channel, velocity */
-  if(when > now) render(when - now, _root);
-  now = when;
+  fmpatch_alloc(&pat, 2 /*ops*/, 1 /* lfo */, 2 /* slot */);
 
-  midifilter_t descriptor = {.m_chan=channel, .m_prog=1, .m_note=note};
-  fmevent_t event = {.type=what, .note_number=note};
+  fmop_param_osc_rel(&pat.params[0], 2.0);
+  fmop_param_osc_rel(&pat.params[1], 1.0);
+  fmop_param_adhr(&pat.params[1], 20.0, 10.0, 0.2, 0.7, 3.0);
 
-  mrouter_route(descriptor, &event);
-}
+/* Patch does this */
+/*
+ fmosc_init(op0, 2.0, 0.006, &freq->el.f, lfo_out);
+ fmosc_init(op1, 1.0, 0.8, &freq->el.f, &op0->el.out);
+ fmadhr_init(adhr, 20.0, 10.0, 0.2, 0.7, 3.0, &amp->el.out);
+*/
 
-void canyon() {
-#include "ripped-midi.inc"
-}
+  int note[] = {60, 62, 64, 65, 67, 69, 71, 72};
 
-int main() {
-  fminstr_t *clar = calloc(1, sizeof(fminstr_t));
-  fmel_t *root = &clar->sub.el;
-  _root = root;
+  for(int n=0; n<8; ++n) {
+    fmslot_ampl(&pat,0,SAMPLE_1);
+    fmslot_freq(&pat,0,note[n] << NOTE_FRACTION);
+    fmslot_keydown(&pat,0);
+    render(0.2*RATE, &pat);
+    fmslot_keyup(&pat,0);
+    render(0.05*RATE, &pat);
+  }
 
-  mrouter_insert(
-    (midifilter_t){.m_chan=0, .m_prog=0, .m_note=0},
-    (midifilter_t){.m_chan=0, .m_prog=0, .m_note=0},
-    _root
-  );
+  fmpatch_free(&pat);
 
-  fprintf(stderr, "Initializing\n");
-  fmosc_setup();
-  fmfreq_setup();
-
-  // Initialize 3 channels
-  fminstr_init(clar, 3);
-
-  fprintf(stderr, "Initialized\n");
-
-  canyon();
-
-  // uint8_t c4=60, e4=64, g4=67;
-
-  // uint8_t maj_scale[]={0,2,4,5,7,9,11,12,14,16};
-
-  // for(int i=0; i<8; ++i) {
-    // clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_on, .note_number=c4-12+maj_scale[i]});
-    // clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_on, .note_number=c4-12+maj_scale[i+2]});
-    // clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_on, .note_number=c4+maj_scale[7-i]});
-    // render(0.9 * 0.25 * RATE, root);
-    // clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_off, .note_number=c4-12+maj_scale[i]});
-    // clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_off, .note_number=c4-12+maj_scale[i+2]});
-    // clar->sub.el.event(&clar->sub.el, (fmevent_t){.type=fmev_note_off, .note_number=c4+maj_scale[7-i]});
-    // render(0.1 * 0.25 * RATE, root);
-  // }
-
-  fprintf(stderr, "Finished\n");
   return 0;
 }
