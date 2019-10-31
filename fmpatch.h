@@ -11,10 +11,16 @@ typedef struct fmslot_s {
   uint8_t active; /* Is this thing on? */
 } fmslot_t;
 
+typedef struct fmlfo_s {
+  frequency_t f0;
+  phase_t ph;
+  sample_t value;
+} fmlfo_t;
+
 typedef struct fmpatch_s {
-  int n_ops;            /* Operator count */
+  int n_ops, n_lfo;     /* Operator count */
   fmslot_t *slot;       /* Slots */
-  //fmosc_t  *lfo;      /* LFOs */
+  fmlfo_t *lfo;         /* LFOs */
   // algorithm
   fmop_param_t *params; /* Slot parameters */
 } fmpatch_t;
@@ -27,3 +33,5 @@ sample_t fmpatch_sample(fmpatch_t *patch);
 
 void fmpatch_alloc(fmpatch_t *patch, int ops, int lfos, int slots);
 void fmpatch_free(fmpatch_t *patch);
+
+void fmpatch_set_lfo(fmpatch_t *patch, int index, float f0);

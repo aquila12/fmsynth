@@ -25,6 +25,7 @@ int main()
   fmfunc_setup();
 
   fmpatch_alloc(&pat, 2 /*ops*/, 1 /* lfo */, 2 /* slot */);
+  fmpatch_set_lfo(&pat, 0, 5.0);
 
   fmop_param_osc_rel(&pat.params[0], 2.0);
   fmop_param_osc_rel(&pat.params[1], 1.0);

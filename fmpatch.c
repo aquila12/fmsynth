@@ -32,11 +32,18 @@ void fmslot_keyup(fmpatch_t *patch, int index) {
     patch->slot[index].op[i].mode = adhr_release;
 }
 
+void fmlfo_update(fmlfo_t *lfo) {
+  lfo->ph += lfo->f0;
+  lfo->value = sine(lfo->ph);
+}
+
 sample_t fmslot_sample(fmpatch_t *patch, int index) {
   int active = 1;
   sample_t signal = 0;
   /* Step through the algorithm */
+  sample_t beta_l0 = (0.006 * SAMPLE_1);
   sample_t beta_01 = (0.8 * SAMPLE_1);
+  signal = MUL(beta_l0, patch->lfo[0].value);
   fmop_update(&patch->slot[index].op[0], &patch->params[0], signal);
   signal = MUL(beta_01, patch->slot[index].op[0].value);
   fmop_update(&patch->slot[index].op[1], &patch->params[1], signal);
@@ -47,6 +54,8 @@ sample_t fmslot_sample(fmpatch_t *patch, int index) {
 }
 
 sample_t fmpatch_sample(fmpatch_t *patch) {
+  for(int i=0; i<patch->n_lfo; ++i) fmlfo_update(&patch->lfo[i]);
+
   sample_t output = 0;
   for(int i=0; i<patch->n_ops; ++i) {
     if(!patch->slot[i].active) continue;
@@ -62,6 +71,9 @@ void fmpatch_alloc(fmpatch_t *patch, int ops, int lfos, int slots) {
   patch->slot = calloc(slots, sizeof(fmslot_t));
   patch->params = calloc(ops, sizeof(fmop_param_t));
 
+  patch->n_lfo = lfos;
+  patch->lfo = calloc(lfos, sizeof(fmlfo_t));
+
   fmop_t *all_ops = calloc(total_operators, sizeof(fmop_t));
   fmslot_t *slot;
 
@@ -76,4 +88,9 @@ void fmpatch_free(fmpatch_t *patch) {
   free(patch->slot[0].op); /* Frees all ops */
   free(patch->params);
   free(patch->slot);
+  free(patch->lfo);
+}
+
+void fmpatch_set_lfo(fmpatch_t *patch, int index, float f0) {
+  patch->lfo[index].f0 = f0 * HERTZ;
 }
