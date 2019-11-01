@@ -57,7 +57,7 @@ sample_t fmpatch_sample(fmpatch_t *patch) {
   for(int i=0; i<patch->n_lfo; ++i) fmlfo_update(&patch->lfo[i]);
 
   sample_t output = 0;
-  for(int i=0; i<patch->n_ops; ++i) {
+  for(int i=0; i<patch->n_slots; ++i) {
     if(!patch->slot[i].active) continue;
     output += fmslot_sample(patch, i);
   }
@@ -67,6 +67,8 @@ sample_t fmpatch_sample(fmpatch_t *patch) {
 void fmpatch_alloc(fmpatch_t *patch, int ops, int lfos, int slots) {
   int total_operators = ops * slots;
 
+  patch->n_slots = slots;
+
   patch->n_ops = ops;
   patch->slot = calloc(slots, sizeof(fmslot_t));
   patch->params = calloc(ops, sizeof(fmop_param_t));
@@ -74,13 +76,13 @@ void fmpatch_alloc(fmpatch_t *patch, int ops, int lfos, int slots) {
   patch->n_lfo = lfos;
   patch->lfo = calloc(lfos, sizeof(fmlfo_t));
 
-  fmop_t *all_ops = calloc(total_operators, sizeof(fmop_t));
+  fmop_t *op_ptr = calloc(total_operators, sizeof(fmop_t));
   fmslot_t *slot;
 
   for(int i=0; i<slots; ++i) {
     slot = &patch->slot[i];
-    slot->op = all_ops;
-    all_ops += ops;
+    slot->op = op_ptr;
+    op_ptr += ops;
   }
 }
 

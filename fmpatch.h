@@ -18,7 +18,7 @@ typedef struct fmlfo_s {
 } fmlfo_t;
 
 typedef struct fmpatch_s {
-  int n_ops, n_lfo;     /* Operator count */
+  int n_ops, n_lfo, n_slots; /* Component count */
   fmslot_t *slot;       /* Slots */
   fmlfo_t *lfo;         /* LFOs */
   // algorithm
