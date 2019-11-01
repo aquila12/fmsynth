@@ -1,15 +1,29 @@
 #include "fmpatch.h"
 #include "unistd.h"
+#include "stdio.h"
+#include "string.h"
+
+#define printerr(...) fprintf (stderr, __VA_ARGS__)
 
 #define BUFSIZE (RATE / 10)
 #define GAIN 32
 
-void render(int n, fmpatch_t *pat) {
+typedef enum cmd_result_e {
+  cmd_ok = 0,
+  cmd_end,
+  cmd_missing,
+  cmd_unknown,
+  cmd_badparam
+} cmd_result_t;
+
+fmpatch_t pat[1];  // The only patch in use right now
+
+void render(int n, fmpatch_t *patch) {
   int16_t outbuf[BUFSIZE];
   int j=0;
 
   for(int i=0; i<n; ++i) {
-    outbuf[j++] = fmpatch_sample(pat) * GAIN >> 16;
+    outbuf[j++] = fmpatch_sample(patch) * GAIN >> 16;
     if(j==BUFSIZE) {
       write(1, outbuf, j * sizeof(int16_t)); // Ignoring failed writes
       j=0;
@@ -18,18 +32,70 @@ void render(int n, fmpatch_t *pat) {
   write(1, outbuf, j * sizeof(int16_t));
 }
 
+cmd_result_t process_cmd(const char *cmdline) {
+  char cmd[5];
+  int i, j, k;
+
+  if(sscanf(cmdline, " %4s", cmd) < 1) return cmd_missing;
+
+  if(strcmp(cmd, "end")==0) {
+    return cmd_end;
+  } else if(strcmp(cmd, "run")==0) {
+    if(sscanf(cmdline, " %*4s %d", &i) < 1) return cmd_badparam;
+    render(i, &pat[0]);
+    return cmd_ok;
+  } else if(strcmp(cmd, "ampl")==0) {
+    if(sscanf(cmdline, " %*4s %d %d %d", &i, &j, &k) < 3) return cmd_badparam;
+    fmslot_ampl(&pat[i], j, k);
+    return cmd_ok;
+  } else if(strcmp(cmd, "freq")==0) {
+    if(sscanf(cmdline, " %*4s %d %d %d", &i, &j, &k) < 3) return cmd_badparam;
+    fmslot_freq(&pat[i], j, k);
+    return cmd_ok;
+  } else if(strcmp(cmd, "keyd")==0) {
+    if(sscanf(cmdline, " %*4s %d %d", &i, &j) < 2) return cmd_badparam;
+    fmslot_keydown(&pat[i], j);
+    return cmd_ok;
+  } else if(strcmp(cmd, "keyu")==0) {
+    if(sscanf(cmdline, " %*4s %d %d", &i, &j) < 2) return cmd_badparam;
+    fmslot_keyup(&pat[i], j);
+    return cmd_ok;
+  }
+
+  return cmd_unknown;
+}
+
+void print_cmd_err(cmd_result_t e, const char* cmdline) {
+  switch(e) {
+  case cmd_ok:
+    break;
+  case cmd_end:
+    printerr("End of program reached\n");
+    break;
+  case cmd_missing:
+    printerr("No command on line: %s\n", cmdline);
+    break;
+  case cmd_unknown:
+    printerr("Unknown command: %s\n", cmdline);
+    break;
+  case cmd_badparam:
+    printerr("Incorrect parameters: %s\n", cmdline);
+    break;
+  default:
+    printerr("Unknown error condition (%d)\n", e);
+  }
+}
+
 int main()
 {
-  fmpatch_t pat;
-
   fmfunc_setup();
 
-  fmpatch_alloc(&pat, 2 /*ops*/, 1 /* lfo */, 2 /* slot */);
-  fmpatch_set_lfo(&pat, 0, 5.0);
+  fmpatch_alloc(&pat[0], 2 /*ops*/, 1 /* lfo */, 2 /* slot */);
+  fmpatch_set_lfo(&pat[0], 0, 5.0);
 
-  fmop_param_osc_rel(&pat.params[0], 2.0);
-  fmop_param_osc_rel(&pat.params[1], 1.0);
-  fmop_param_adhr(&pat.params[1], 20.0, 10.0, 0.2, 0.7, 3.0);
+  fmop_param_osc_rel(&pat[0].params[0], 2.0);
+  fmop_param_osc_rel(&pat[0].params[1], 1.0);
+  fmop_param_adhr(&pat[0].params[1], 20.0, 10.0, 0.2, 0.7, 3.0);
 
 /* Patch does this */
 /*
@@ -41,15 +107,15 @@ int main()
   int note[] = {60, 62, 64, 65, 67, 69, 71, 72};
 
   for(int n=0; n<8; ++n) {
-    fmslot_ampl(&pat,0,SAMPLE_1);
-    fmslot_freq(&pat,0,note[n] << NOTE_FRACTION);
-    fmslot_keydown(&pat,0);
-    render(0.2*RATE, &pat);
-    fmslot_keyup(&pat,0);
-    render(0.05*RATE, &pat);
+    fmslot_ampl(&pat[0], 0, SAMPLE_1);
+    fmslot_freq(&pat[0], 0, note[n] << NOTE_FRACTION);
+    fmslot_keydown(&pat[0], 0);
+    render(0.2*RATE, &pat[0]);
+    fmslot_keyup(&pat[0], 0);
+    render(0.05*RATE, &pat[0]);
   }
 
-  fmpatch_free(&pat);
+  fmpatch_free(&pat[0]);
 
   return 0;
 }
