@@ -6,7 +6,7 @@
 #define printerr(...) fprintf (stderr, __VA_ARGS__)
 
 #define BUFSIZE (RATE / 10)
-#define GAIN 32
+#define GAIN 16
 
 typedef enum cmd_result_e {
   cmd_ok = 0,
