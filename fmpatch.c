@@ -38,19 +38,33 @@ void fmlfo_update(fmlfo_t *lfo) {
 }
 
 sample_t fmslot_sample(fmpatch_t *patch, int index) {
-  int active = 1;
+  fmslot_t *slot = &patch->slot[index];
+  int active = 0;
   sample_t signal = 0;
-  /* Step through the algorithm */
-  sample_t beta_l0 = (0.006 * SAMPLE_1);
-  sample_t beta_01 = (0.8 * SAMPLE_1);
-  signal = MUL(beta_l0, patch->lfo[0].value);
-  fmop_update(&patch->slot[index].op[0], &patch->params[0], signal);
-  signal = MUL(beta_01, patch->slot[index].op[0].value);
-  fmop_update(&patch->slot[index].op[1], &patch->params[1], signal);
-  signal = patch->slot[index].op[1].value;
-  /* */
-  if(!active) patch->slot[index].active = 0;
-  return MUL(signal, patch->slot[index].ampl);
+  int i;
+
+  for(fminstruction_t *ins=patch->prog; ins->opcode != OpOut; ++ins) {
+    switch(ins->opcode) {
+    case OpFeed:
+      i = ins->op.number;
+      fmop_update(&slot->op[i], &patch->params[i], signal);
+      signal = 0;
+      active = 0;
+      break;
+    case OpMix:
+      i = ins->mod.number;
+      signal += MUL(ins->mod.gain, slot->op[i].value);
+      if(slot->op[i].mode != adhr_idle) active = 1;
+      break;
+    case OpLMix:
+      i = ins->mod.number;
+      signal += MUL(ins->mod.gain, patch->lfo[i].value);
+      break;
+    }
+  }
+
+  //if(!active) slot->active = 0;
+  return MUL(signal, slot->ampl);
 }
 
 sample_t fmpatch_sample(fmpatch_t *patch) {
@@ -64,7 +78,7 @@ sample_t fmpatch_sample(fmpatch_t *patch) {
   return output;
 }
 
-void fmpatch_alloc(fmpatch_t *patch, int ops, int lfos, int slots) {
+void fmpatch_alloc(fmpatch_t *patch, int ops, int lfos, int slots, int prog_size) {
   int total_operators = ops * slots;
 
   patch->n_slots = slots;
@@ -75,6 +89,9 @@ void fmpatch_alloc(fmpatch_t *patch, int ops, int lfos, int slots) {
 
   patch->n_lfo = lfos;
   patch->lfo = calloc(lfos, sizeof(fmlfo_t));
+
+  patch->prog_size = prog_size;
+  patch->prog = calloc(prog_size, sizeof(fminstruction_t));
 
   fmop_t *op_ptr = calloc(total_operators, sizeof(fmop_t));
   fmslot_t *slot;

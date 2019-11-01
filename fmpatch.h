@@ -18,14 +18,14 @@ typedef struct fmlfo_s {
 } fmlfo_t;
 
 typedef enum fmopcode_e {
-  /* OP instructions */
-  Op,     /* Commit buffer to operator modulation input */
-  /* MOD instructions */
-  Mix,    /* Add operator to buffer with gain */
-  LMix,   /* Add LFO to buffer with gain */
-  AMod,   /* Amplitude modulate buffer using LFO */
   /* Parameterless instructions */
-  Out
+  OpOut = 0,
+  /* OP instructions */
+  OpFeed,     /* Commit buffer to operator modulation input */
+  /* MOD instructions */
+  OpMix,    /* Add operator to buffer with gain */
+  OpLMix    /* Add LFO to buffer with gain */
+  /*OpAMod    /* Amplitude modulate buffer using LFO */
 } fmopcode_t;
 
 typedef struct fminstruction_s {
@@ -55,7 +55,7 @@ void fmslot_keydown(fmpatch_t *patch, int index);
 void fmslot_keyup(fmpatch_t *patch, int index);
 sample_t fmpatch_sample(fmpatch_t *patch);
 
-void fmpatch_alloc(fmpatch_t *patch, int ops, int lfos, int slots);
+void fmpatch_alloc(fmpatch_t *patch, int ops, int lfos, int slots, int prog_size);
 void fmpatch_free(fmpatch_t *patch);
 
 void fmpatch_set_lfo(fmpatch_t *patch, int index, float f0);

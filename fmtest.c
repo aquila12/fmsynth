@@ -86,16 +86,39 @@ void print_cmd_err(cmd_result_t e, const char* cmdline) {
   }
 }
 
+void init_test_patch(fmpatch_t *p) {
+  fmpatch_alloc(p, 2 /*ops*/, 1 /* lfo */, 32 /* slot */, 6 /* instructions */);
+
+  fmpatch_set_lfo(p, 0, 5.0);
+
+  p->prog[0].opcode = OpLMix;
+  p->prog[0].mod.number = 0;
+  p->prog[0].mod.gain = 0.006 * SAMPLE_1;
+  p->prog[1].opcode = OpFeed;
+  p->prog[1].op.number = 0;
+
+  fmop_param_osc_rel(&p->params[0], 2.0);
+
+  p->prog[2].opcode = OpMix;
+  p->prog[2].mod.number = 0;
+  p->prog[2].mod.gain = 0.8 * SAMPLE_1;
+  p->prog[3].opcode = OpFeed;
+  p->prog[3].mod.number = 1;
+
+  fmop_param_osc_rel(&p->params[1], 1.0);
+  fmop_param_adhr(&p->params[1], 20.0, 10.0, 0.2, 0.7, 3.0);
+
+  p->prog[4].opcode = OpMix;
+  p->prog[4].mod.number = 1;
+  p->prog[4].mod.gain = SAMPLE_1;
+  p->prog[5].opcode = OpOut;
+}
+
 int main()
 {
   fmfunc_setup();
 
-  fmpatch_alloc(&pat[0], 2 /*ops*/, 1 /* lfo */, 32 /* slot */);
-  fmpatch_set_lfo(&pat[0], 0, 5.0);
-
-  fmop_param_osc_rel(&pat[0].params[0], 2.0);
-  fmop_param_osc_rel(&pat[0].params[1], 1.0);
-  fmop_param_adhr(&pat[0].params[1], 20.0, 10.0, 0.2, 0.7, 3.0);
+  init_test_patch(&pat[0]);
 
 /* Patch does this */
 /*
