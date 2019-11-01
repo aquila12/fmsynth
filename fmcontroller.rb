@@ -2,6 +2,7 @@
 
 require 'set'
 require_relative 'fmerror'
+require_relative 'fmdriver'
 
 # Dispatches MIDI events to FM operator slots
 class FMController
@@ -9,8 +10,23 @@ class FMController
   MIDI_BEAT_DIVISIONS = 96
   DT_CONSTANT = (MIDI_BEAT_DIVISIONS.to_f * 1_000_000 / SAMPLE_RATE)
 
-  def initialize
+  attr_reader :driver
+
+  def initialize(driver)
+    @driver = driver
     reset
+  end
+
+  def vel2ampl(vel)
+    vel << 17
+  end
+
+  def note2fmnn(ch, note)
+    (note << 24) + ((@pitch_bend[ch] - 0x2000) << 12)
+  end
+
+  def delta2samples(dt)
+    (dt * @dt_mult).round
   end
 
   def reset
@@ -68,30 +84,6 @@ class FMController
     slot || raise(FMNoActiveNoteError)
   end
 
-  def msg_slot_ampl(slot, velo)
-    ampl = velo << 17
-    warn "Slot #{slot} ampl = #{ampl}"
-  end
-
-  def msg_slot_freq(slot, chan, note)
-    bend = @pitch_bend[chan] - 0x2000
-    fmnn = (bend << 12) + (note << 24)
-    warn "Slot #{slot} note = #{fmnn}"
-  end
-
-  def msg_slot_keydown(slot)
-    warn "Slot #{slot} keydown"
-  end
-
-  def msg_slot_keyup(slot)
-    warn "Slot #{slot} keyup"
-  end
-
-  def msg_render(delta)
-    n = (delta * @dt_mult).round
-    warn "Render #{n} samples"
-  end
-
   def midi_tempo(event)
     self.tempo = event.tempo
   end
@@ -99,16 +91,16 @@ class FMController
   def midi_noteon(event)
     e = event
     slot = _midi_slot(e.channel, e.note, action: :take)
-    msg_slot_ampl(slot, e.velocity)
-    msg_slot_freq(slot, e.channel, e.note)
-    msg_slot_keydown(slot)
+    driver.slot_ampl(slot, vel2ampl(e.velocity))
+    driver.slot_freq(slot, note2fmnn(e.channel, e.note))
+    driver.slot_keydown(slot)
     @active_notes[e.channel].add e.note
   end
 
   def midi_noteoff(event)
     e = event
     slot = _midi_slot(e.channel, e.note, action: :release)
-    msg_slot_keyup(slot)
+    driver.slot_keyup(slot)
     @active_notes[e.channel].delete e.note
   end
 
@@ -116,7 +108,7 @@ class FMController
     @pitch_bend[event.channel] = event.value
     @active_notes[event.channel].each do |note|
       slot = _midi_slot(event.channel, note)
-      msg_slot_freq(slot, event.channel, note)
+      driver.slot_freq(slot, note2fmnn(event.channel, note))
     rescue FMNoActiveNoteError => e
       warn "FM Pitchbent note no longer active: #{note}"
     end
@@ -126,7 +118,7 @@ class FMController
     e = event
 
     slot = _midi_slot(e.channel, e.note)
-    msg_slot_ampl(slot, e.velocity)
+    driver.slot_ampl(slot, vel2ampl(e.velocity))
   end
 
   def _dispatch(event)
@@ -145,7 +137,7 @@ class FMController
   end
 
   def handle_event(event)
-    msg_render(event.delta_time) if event.delta_time.positive?
+    driver.render(delta2samples(event.delta_time)) if event.delta_time.positive?
 
     _dispatch(event)
   rescue FMError => e

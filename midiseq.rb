@@ -7,6 +7,12 @@ require_relative 'fmcontroller'
 
 Bundler.require
 
+drivers = {
+  'null' => FMNullDriver,
+}
+
+driver = drivers[ENV['FMDRIVER']] || FMStdoutDriver.new
+
 # Create a new, empty sequence.
 seq = MIDI::Sequence.new()
 
@@ -18,7 +24,7 @@ seq.read(ARGF) do | track, num_tracks, i |
     warn "read track #{i} of #{num_tracks}"
 end
 
-controller = FMController.new
+controller = FMController.new(driver)
 
 # Merge down to a single event list
 track = MIDI::Track.new(nil)
