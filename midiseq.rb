@@ -12,6 +12,7 @@ drivers = {
 }
 
 driver = drivers[ENV['FMDRIVER']] || FMStdoutDriver.new
+debug = ENV['FMDEBUG'] == '1'
 
 # Create a new, empty sequence.
 seq = MIDI::Sequence.new()
@@ -33,7 +34,7 @@ seq.each { |in_track| track.merge in_track.events }
 track.each do |e|
   e.print_decimal_numbers = true # default = false (print hex)
   e.print_note_names = true # default = false (print note numbers)
-  warn e
+  warn e if debug
 
   controller.handle_event(e)
 end
