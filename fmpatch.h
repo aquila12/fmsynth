@@ -17,11 +17,35 @@ typedef struct fmlfo_s {
   sample_t value;
 } fmlfo_t;
 
+typedef enum fmopcode_e {
+  /* OP instructions */
+  Op,     /* Commit buffer to operator modulation input */
+  /* MOD instructions */
+  Mix,    /* Add operator to buffer with gain */
+  LMix,   /* Add LFO to buffer with gain */
+  AMod,   /* Amplitude modulate buffer using LFO */
+  /* Parameterless instructions */
+  Out
+} fmopcode_t;
+
+typedef struct fminstruction_s {
+  fmopcode_t opcode;
+  union {
+    struct {
+      int number;       /* Operator number */
+    } op;
+    struct {
+      int number;       /* LFO or Operator number */
+      sample_t gain;    /* Modulation Index */
+    } mod;
+  };
+} fminstruction_t;
+
 typedef struct fmpatch_s {
-  int n_ops, n_lfo, n_slots; /* Component count */
+  int n_ops, n_lfo, n_slots, prog_size; /* Component count */
   fmslot_t *slot;       /* Slots */
   fmlfo_t *lfo;         /* LFOs */
-  // algorithm
+  fminstruction_t *prog;       /* Patch program */
   fmop_param_t *params; /* Slot parameters */
 } fmpatch_t;
 
