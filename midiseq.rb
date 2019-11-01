@@ -25,7 +25,7 @@ seq.read(ARGF) do | track, num_tracks, i |
     warn "read track #{i} of #{num_tracks}"
 end
 
-controller = FMController.new(driver)
+controller = FMController.new(driver, seq.ppqn)
 
 # Merge down to a single event list
 track = MIDI::Track.new(nil)

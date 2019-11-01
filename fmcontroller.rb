@@ -7,13 +7,13 @@ require_relative 'fmdriver'
 # Dispatches MIDI events to FM operator slots
 class FMController
   SAMPLE_RATE = 48_000
-  MIDI_BEAT_DIVISIONS = 96
-  DT_CONSTANT = (MIDI_BEAT_DIVISIONS.to_f * 1_000_000 / SAMPLE_RATE)
+  SAMPLES_PER_US = SAMPLE_RATE / 1_000_000.0
 
   attr_reader :driver
 
-  def initialize(driver)
+  def initialize(driver, divisions_per_beat)
     @driver = driver
+    @div_per_beat = divisions_per_beat
     reset
   end
 
@@ -43,7 +43,7 @@ class FMController
   end
 
   def tempo=(us_per_beat)
-    @dt_mult = us_per_beat.to_f / DT_CONSTANT
+    @dt_mult = us_per_beat.to_f * SAMPLES_PER_US / @div_per_beat
   end
 
   def prepare_instrument(instrument, first_slot, num_slots)
