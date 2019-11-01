@@ -90,7 +90,7 @@ int main()
 {
   fmfunc_setup();
 
-  fmpatch_alloc(&pat[0], 2 /*ops*/, 1 /* lfo */, 2 /* slot */);
+  fmpatch_alloc(&pat[0], 2 /*ops*/, 1 /* lfo */, 32 /* slot */);
   fmpatch_set_lfo(&pat[0], 0, 5.0);
 
   fmop_param_osc_rel(&pat[0].params[0], 2.0);
@@ -104,15 +104,12 @@ int main()
  fmadhr_init(adhr, 20.0, 10.0, 0.2, 0.7, 3.0, &amp->el.out);
 */
 
-  int note[] = {60, 62, 64, 65, 67, 69, 71, 72};
-
-  for(int n=0; n<8; ++n) {
-    fmslot_ampl(&pat[0], 0, SAMPLE_1);
-    fmslot_freq(&pat[0], 0, note[n] << NOTE_FRACTION);
-    fmslot_keydown(&pat[0], 0);
-    render(0.2*RATE, &pat[0]);
-    fmslot_keyup(&pat[0], 0);
-    render(0.05*RATE, &pat[0]);
+  char cmdline[80];
+  cmd_result_t result=cmd_ok;
+  while(result != cmd_end) {
+    if(fgets(cmdline, sizeof(cmdline), stdin)==0) return -1;
+    result = process_cmd(cmdline);
+    print_cmd_err(result, cmdline);
   }
 
   fmpatch_free(&pat[0]);
