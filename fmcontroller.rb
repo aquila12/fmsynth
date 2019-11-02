@@ -62,6 +62,12 @@ class FMController
     raise FMNoInstrumentError
   end
 
+  def dump_router()
+    @instrument_mapping.each do |instrument, params|
+      warn params.map { |k,v| "#{k}=#{v}" }.join(', ') + " => #{instrument}"
+    end
+  end
+
   def take_slot(instrument, note)
     slot = @instr_note_slot[instrument][note] || @instr_free_slots[instrument].first || raise(FMNoFreeSlotError)
     @instr_free_slots[instrument].delete slot

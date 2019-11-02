@@ -38,6 +38,8 @@ input = FMInput.new(controller, driver)
 
 input.load input_file
 
+controller.dump_router if debug
+
 track.each do |e|
   e.print_decimal_numbers = true # default = false (print hex)
   e.print_note_names = true # default = false (print note numbers)
