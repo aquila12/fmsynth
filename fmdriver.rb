@@ -21,6 +21,10 @@ class FMNullDriver
   def render(n)
     warn "Render #{n} samples"
   end
+
+  def emit(cmd)
+    warn "Emit: #{cmd}"
+  end
 end
 
 class FMStdoutDriver
@@ -42,5 +46,9 @@ class FMStdoutDriver
 
   def render(n)
     puts "run #{n}"
+  end
+
+  def emit(cmd)
+    puts cmd
   end
 end

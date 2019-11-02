@@ -1,0 +1,5 @@
+.map null c10	; Kill drums
+.map test	; Everything
+.pat test 32 test.pat	; Load patch with polyphony
+.pat null 1 null.pat	; Load monophonic patch (null patch)
+.set

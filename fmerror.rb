@@ -2,5 +2,11 @@
 
 FMError = Class.new(StandardError)
 
-FMNoFreeSlotError = Class.new(FMError)
-FMNoActiveNoteError = Class.new(FMError)
+FMControllerError = Class.new(FMError)
+FMInputError = Class.new(FMError)
+
+FMNoFreeSlotError = Class.new(FMControllerError)
+FMNoActiveNoteError = Class.new(FMControllerError)
+FMNoInstrumentError = Class.new(FMControllerError)
+
+FMUnknownCommandError = Class.new(FMInputError)

@@ -10,6 +10,7 @@ class FMController
   SAMPLES_PER_US = SAMPLE_RATE / 1_000_000.0
 
   attr_reader :driver
+  attr_accessor :instrument_mapping
 
   def initialize(driver, divisions_per_beat)
     @driver = driver
@@ -37,25 +38,26 @@ class FMController
     @instr_free_slots = Hash.new { |fs, instr| fs[instr] = Set.new } # slot_number
     @instr_note_slot = Hash.new { |ns, instr| ns[instr] = {} } # h[note_number] => slot
 
-    self.tempo = 500_000 # Default i.e. 120 bpm
+    @instrument_mapping = []
 
-    prepare_instrument(0, 0, 32)
+    self.tempo = 500_000 # Default i.e. 120 bpm
   end
 
   def tempo=(us_per_beat)
     @dt_mult = us_per_beat.to_f * SAMPLES_PER_US / @div_per_beat
   end
 
-  def prepare_instrument(instrument, first_slot, num_slots)
-    # NB: these may be slot numbers returned from the kernel
-    last_slot = first_slot + num_slots - 1
-    @instr_free_slots[instrument] += (first_slot..last_slot)
+  def prepare_instrument(instrument, num_slots)
+    @instr_free_slots[instrument] += (0..num_slots-1)
   end
 
   def get_instrument(channel, note)
     bank, prog = @voice_selection[channel]
-    # Check patching rules and return an FM instrument number
-    0
+    match_params = { 'c' => channel, 'n' => note, 'b' => bank, 'p' => prog }
+    instrument = @instrument_mapping.each do |instrument, params|
+      return instrument if params.all? { |k,v| match_params[k] == v }
+    end
+    raise FMNoInstrumentError
   end
 
   def take_slot(instrument, note)

@@ -4,6 +4,7 @@
 require 'rubygems'
 require 'bundler'
 require_relative 'fmcontroller'
+require_relative 'fminput'
 
 Bundler.require
 
@@ -14,22 +15,28 @@ drivers = {
 driver = drivers[ENV['FMDRIVER']] || FMStdoutDriver.new
 debug = ENV['FMDEBUG'] == '1'
 
-# Create a new, empty sequence.
-seq = MIDI::Sequence.new()
+def load_midi_sequence(file)
+  track = MIDI::Track.new(nil)
+  ppqn = nil
+  File.open(file, 'rb') do |mid|
+    seq = MIDI::Sequence.new()
+    seq.read mid
+    ppqn = seq.ppqn
 
-# Read the contents of a MIDI file into the sequence.
-ARGF.binmode
-
-seq.read(ARGF) do | track, num_tracks, i |
-    # Print something when each track is read.
-    warn "read track #{i} of #{num_tracks}"
+    seq.each { |in_track| track.merge in_track.events }
+  end
+  [track, ppqn]
 end
 
-controller = FMController.new(driver, seq.ppqn)
+input_file = ARGV.shift # The file sent to the input module
+midi_file = ARGV.shift  # The MIDI file to play
 
-# Merge down to a single event list
-track = MIDI::Track.new(nil)
-seq.each { |in_track| track.merge in_track.events }
+track, ppqn = load_midi_sequence(midi_file)
+
+controller = FMController.new(driver, ppqn)
+input = FMInput.new(controller, driver)
+
+input.load input_file
 
 track.each do |e|
   e.print_decimal_numbers = true # default = false (print hex)
