@@ -2,12 +2,12 @@ LDLIBS+=-lm
 
 CFLAGS+=-O3
 
-fmtest: fmfunc.o fmop.o fmpatch.o fmrender.o fmcmd.o
+fmsynth: fmfunc.o fmop.o fmpatch.o fmrender.o fmcmd.o
 
-fmtest.dbg: CFLAGS=-g
-fmtest.dbg: CC=gcc-8
-fmtest.dbg: fmtest
+fmsynth.dbg: CFLAGS=-g
+fmsynth.dbg: CC=gcc-8
+fmsynth.dbg: fmsynth
 
 .PHONY: clean
 clean:
-	rm -f *.o fmtest
+	rm -f *.o fmsynth
