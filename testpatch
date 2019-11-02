@@ -1,0 +1,24 @@
+#!/bin/sh
+# Test a patch by playing some notes
+
+(
+  echo edit
+  echo  clr 1
+  echo  sel 0 1
+  echo  pat 100 100 100 '; Bunch of space, just in case'
+  cat   "$1"
+  echo  end
+  echo end
+
+  for n in 60 62 64 65 67 69 71 72
+  do
+    echo freq 0 0 $((n << 24))
+    echo ampl 0 0 $((16777216))
+    echo keyd 0 0
+    echo run 16000
+    echo keyu 0 0
+  done
+  echo end
+) |
+./fmsynth |
+aplay -r48000 -c1 -fS16_LE
