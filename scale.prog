@@ -1,0 +1,40 @@
+ampl 0 0 16646144
+freq 0 0 1073741824
+keyd 0 0
+run 24000
+keyu 0 0
+ampl 0 1 16646144
+freq 0 1 1107296256
+keyd 0 1
+run 24000
+keyu 0 1
+ampl 0 2 16646144
+freq 0 2 1140850688
+keyd 0 2
+run 24000
+keyu 0 2
+ampl 0 3 16646144
+freq 0 3 1157627904
+keyd 0 3
+run 24000
+keyu 0 3
+ampl 0 4 16646144
+freq 0 4 1191182336
+keyd 0 4
+run 24000
+keyu 0 4
+ampl 0 5 16646144
+freq 0 5 1224736768
+keyd 0 5
+run 24000
+keyu 0 5
+ampl 0 6 16646144
+freq 0 6 1258291200
+keyd 0 6
+run 24000
+keyu 0 6
+ampl 0 7 16646144
+freq 0 7 1275068416
+keyd 0 7
+run 24000
+keyu 0 7
