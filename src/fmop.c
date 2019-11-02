@@ -15,11 +15,16 @@ sample_t fmop_update_adhr(fmop_t *operator, fmop_param_t *param, sample_t input)
     if(operator->mode == adhr_release) operator->mode = adhr_idle;
     return input;
   }
+  
+  if(operator->mode == adhr_idle) return 0;
 
   operator->ampl += param->rate[operator->mode];
 
-  if(operator->ampl <= 0) operator->mode = adhr_idle;
-  if(operator->mode == adhr_idle) return 0;
+  if(operator->ampl <= 0) {
+    operator->mode = adhr_idle;
+    operator->ampl = 0;
+    return 0;
+  }
 
   if(operator->mode == adhr_attack && operator->ampl >= SAMPLE_1) {
     operator->ampl = SAMPLE_1;

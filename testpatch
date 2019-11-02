@@ -15,10 +15,11 @@
     echo freq 0 0 $((n << 24))
     echo ampl 0 0 $((16777216))
     echo keyd 0 0
-    echo run 16000
+    echo run 12000
     echo keyu 0 0
+    echo run 4000
   done
   echo end
 ) |
-./fmsynth |
+./fmsynth 2>/dev/null |
 aplay -r48000 -c1 -fS16_LE
