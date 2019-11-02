@@ -1,3 +1,5 @@
+VPATH = src/
+
 LDLIBS+=-lm
 
 CFLAGS+=-O3
