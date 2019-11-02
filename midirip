@@ -1,6 +1,0 @@
-#!/bin/sh
-
-timidity "$1" -Or -o /dev/null --verbose=3 |
-grep -E '^Midi Event.*ME_(NOTEON|NOTEOFF) ' |
-# ME_NOTEON / ME_NOTEOFF: channel, note, velocity
-sed -r 's/Midi Event (.*): ME_(.*) (.*) (.*) (.*)/event(\1, \2, \3, \4, \5);/' > ripped-midi.inc
