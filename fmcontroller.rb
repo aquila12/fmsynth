@@ -55,7 +55,7 @@ class FMController
 
   def get_instrument(channel, note)
     bank, prog = @voice_selection[channel]
-    match_params = { 'c' => channel+1, 'n' => note, 'b' => bank, 'p' => prog }
+    match_params = { 'c' => channel+1, 'n' => note, 'b' => bank, 'p' => prog+1 }
     instrument = @instrument_mapping.each do |instrument, params|
       return instrument if params.all? { |k,v| match_params[k] == v }
     end
