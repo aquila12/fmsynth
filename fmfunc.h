@@ -19,7 +19,7 @@ typedef int32_t sample_t;
 /* Fixed point multiply */
 /* May be faster as a 64-bit mul */
 #define MUL_INSHIFT (SAMPLE_FRACTION/2)
-#define MUL(s1, s2) ((s1>>MUL_INSHIFT) * (s2>>MUL_INSHIFT))
+#define MUL(s1, s2) (((s1)>>MUL_INSHIFT) * ((s2)>>MUL_INSHIFT))
 
 #define SINE_BUFBITS 15
 #define PHASE_SIG_BITS (SINE_BUFBITS + 2)

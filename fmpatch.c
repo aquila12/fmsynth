@@ -60,6 +60,10 @@ sample_t fmslot_sample(fmpatch_t *patch, int index) {
       i = ins->mod.number;
       signal += MUL(ins->mod.gain, patch->lfo[i].value);
       break;
+    case OpAMod:
+      i = ins->mod.number;
+      signal = MUL(signal, SAMPLE_1 + MUL(ins->mod.gain, patch->lfo[i].value));
+      break;
     }
   }
 

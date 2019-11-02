@@ -21,11 +21,11 @@ typedef enum fmopcode_e {
   /* Parameterless instructions */
   OpOut = 0,
   /* OP instructions */
-  OpFeed,     /* Commit buffer to operator modulation input */
+  OpFeed,   /* Commit buffer to operator modulation input */
   /* MOD instructions */
   OpMix,    /* Add operator to buffer with gain */
-  OpLMix    /* Add LFO to buffer with gain */
-  /*OpAMod    /* Amplitude modulate buffer using LFO */
+  OpLMix,   /* Add LFO to buffer with gain */
+  OpAMod    /* Amplitude modulate buffer using LFO */
 } fmopcode_t;
 
 typedef struct fminstruction_s {

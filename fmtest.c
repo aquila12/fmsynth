@@ -87,9 +87,10 @@ void print_cmd_err(cmd_result_t e, const char* cmdline) {
 }
 
 void init_test_patch(fmpatch_t *p) {
-  fmpatch_alloc(p, 2 /*ops*/, 1 /* lfo */, 32 /* slot */, 6 /* instructions */);
+  fmpatch_alloc(p, 2 /*ops*/, 2 /* lfo */, 32 /* slot */, 7 /* instructions */);
 
   fmpatch_set_lfo(p, 0, 5.0);
+  fmpatch_set_lfo(p, 1, 4.0);
 
   p->prog[0].opcode = OpLMix;
   p->prog[0].mod.number = 0;
@@ -111,7 +112,10 @@ void init_test_patch(fmpatch_t *p) {
   p->prog[4].opcode = OpMix;
   p->prog[4].mod.number = 1;
   p->prog[4].mod.gain = SAMPLE_1;
-  p->prog[5].opcode = OpOut;
+  p->prog[5].opcode = OpAMod;
+  p->prog[5].mod.number = 1;
+  p->prog[5].mod.gain = 0.2 * SAMPLE_1;
+  p->prog[6].opcode = OpOut;
 }
 
 int main()
