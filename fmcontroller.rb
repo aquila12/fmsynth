@@ -48,7 +48,9 @@ class FMController
   end
 
   def prepare_instrument(instrument, num_slots)
-    @instr_free_slots[instrument] += (0..num_slots-1)
+    num_slots.times do |slot|
+      @instr_free_slots[instrument].add "#{instrument} #{slot}"
+    end
   end
 
   def get_instrument(channel, note)

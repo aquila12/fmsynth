@@ -29,19 +29,19 @@ end
 
 class FMStdoutDriver
   def slot_ampl(slot, ampl)
-    puts "ampl 0 #{slot} #{ampl}"
+    puts "ampl #{slot} #{ampl}"
   end
 
   def slot_freq(slot, fmnn)
-    puts "freq 0 #{slot} #{fmnn}"
+    puts "freq #{slot} #{fmnn}"
   end
 
   def slot_keydown(slot)
-    puts "keyd 0 #{slot}"
+    puts "keyd #{slot}"
   end
 
   def slot_keyup(slot)
-    puts "keyu 0 #{slot}"
+    puts "keyu #{slot}"
   end
 
   def render(n)
