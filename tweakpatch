@@ -1,6 +1,8 @@
 #!/bin/sh
 # Keep playing one note over and over, but reload the patch regularly
 
+NOTE="${2:-60}"
+
 while true
 do
   (
@@ -12,7 +14,7 @@ do
     echo  end
     echo end
 
-    for n in 60 60 60 60
+    for n in "$NOTE" "$NOTE" "$NOTE" "$NOTE"
     do
       echo freq 0 0 $((n << 24))
       echo ampl 0 0 $((16777216))

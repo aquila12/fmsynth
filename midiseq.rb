@@ -3,8 +3,8 @@
 
 require 'rubygems'
 require 'bundler'
-require_relative 'fmcontroller'
-require_relative 'fminput'
+require_relative 'lib/fmcontroller'
+require_relative 'lib/fminput'
 
 Bundler.require
 
