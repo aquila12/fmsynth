@@ -98,6 +98,10 @@ class FMController
     self.tempo = event.tempo
   end
 
+  def midi_progchange(event)
+    @voice_selection[event.channel][1] = event.program
+  end
+
   def midi_noteon(event)
     e = event
     slot = _midi_slot(e.channel, e.note, action: :take)
@@ -143,6 +147,8 @@ class FMController
       midi_noteoff event
     when MIDI::PitchBend
       midi_pitchbend event
+    when MIDI::ProgramChange
+      midi_progchange event
     end
   end
 
