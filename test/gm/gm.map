@@ -1,0 +1,23 @@
+.map null c10	; Kill drums
+.map accord p22
+.map oguitar p30
+.map dguitar p31
+.map oboe p69
+.map bassoon p71
+.map clarinet p72
+.map piccolo p73
+.map flute p74
+.map recorder p75
+.map default	; Everything
+.pat default 32 22-accord.pat	; Load patch with polyphony
+.pat accord 20 22-accord.pat
+.pat oguitar 10 30-oguitar.pat
+.pat dguitar 10 31-dguitar.pat
+.pat oboe 3 69-oboe.pat
+.pat bassoon 3 71-bassoon.pat
+.pat clarinet 3 72-clarinet.pat
+.pat piccolo 3 73-piccolo.pat
+.pat flute 3 74-flute.pat
+.pat recorder 3 75-recorder.pat
+.pat null 1 ../null.pat	; Load monophonic patch (null patch)
+.set
