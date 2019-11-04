@@ -67,7 +67,7 @@ sample_t fmslot_sample(fmpatch_t *patch, int index) {
     }
   }
 
-  //if(!active) slot->active = 0;
+  if(!active) slot->active = 0;
   return MUL(signal, slot->ampl);
 }
 
