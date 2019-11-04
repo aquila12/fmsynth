@@ -1,7 +1,28 @@
 #!/bin/sh
 # Keep playing one note over and over, but reload the patch regularly
 
-NOTE="${2:-60}"
+case "$2" in
+treble)
+  PATTERN="84 96 96 84 96 84 84 96 84 96 96 84 84 96 84 84"
+  ON=4500
+  OFF=500
+  ;;
+bass)
+  PATTERN="33 40 45  33 40 43  38 40  33 40 45 33  43 40 38 40"
+  ON=6000
+  OFF=1000
+  ;;
+"")
+  PATTERN="60 60 60 60"
+  ON=7000
+  OFF=1000
+  ;;
+*)
+  PATTERN="$2"
+  ON=7000
+  OFF=1000
+  ;;
+esac
 
 while true
 do
@@ -14,18 +35,16 @@ do
     echo  end
     echo end
 
-    for n in "$NOTE" "$NOTE" "$NOTE" "$NOTE"
+    for n in $PATTERN
     do
       echo freq 0 0 $((n << 24))
       echo ampl 0 0 $((16777216))
       echo keyd 0 0
-      echo run 7000
+      echo run "$ON"
       echo keyu 0 0
-      echo run 1000
+      echo run "$OFF"
     done
-    echo run 16000
-    echo end
   ) |
-  ./fmsynth 2>/dev/null
+./fmsynth 2>/dev/null
 done |
 aplay -r48000 -c1 -fS16_LE
