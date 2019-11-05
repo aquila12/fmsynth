@@ -9,7 +9,7 @@ prog
   feed 0
   mix 1 0.6 ; FB
   feed 1
-  mix 0 3.0
+  mix 0 4.5
   feed 2
   mix 1 10.0
   feed 3
