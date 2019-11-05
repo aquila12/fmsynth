@@ -42,10 +42,13 @@ class FMInput
   end
 
   def add_mapping(instrument, str_params)
+    unless @mapping.key? instrument
+      @mapping[instrument] = @next_ins
+      @next_ins += 1
+    end
+
     params = str_params.map { |str| [ str[0].to_s, str[1..-1].to_i ] }
-    @controller.instrument_mapping.push [@next_ins, params]
-    @mapping[instrument] = @next_ins
-    @next_ins += 1
+    @controller.instrument_mapping.push [@mapping[instrument], params]
   end
 
   def add_patch(instrument, polyphony, patchfile)
