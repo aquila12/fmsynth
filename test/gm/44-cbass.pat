@@ -7,9 +7,9 @@ op.e 1 30.0 30.0 0.0 0.7 20.0 ; Operator 1 envelope
 prog
   feed 0
   feed 2
-  mix 0 3
-  mix 2 4
-  lmix 0 0.002
+  mix 0 0.48
+  mix 2 0.64
+  lmix 0 0.0
   feed 1
   mix 1 1.0
   amod 1 0.1

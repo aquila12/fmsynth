@@ -6,11 +6,11 @@ op.r 2 1.987
 op.e 1 20.0 10.0 0.0 0.7 15.0 ; Operator 1 envelope
 op.e 2 10.0 10.0 0.0 0.7 15.0
 prog
-  lmix 0 0.001
+  lmix 0 0.0
   feed 0
-  mix 0 5.0
+  mix 0 0.8
   feed 1
-  mix 0 6.0
+  mix 0 0.96
   feed 2
   mix 1 0.7
   mix 2 0.7
