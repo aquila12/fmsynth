@@ -1,14 +1,19 @@
-lfo 0 5.0
-lfo 1 4.0
-op.r 0 2.0 ; Operator 0 relative frequency at 2.0*f
-op.r 1 1.0 ; Operator 1 relative frequency at 1.0*f
-op.e 1 50.0 10.0 0.2 0.7 25.0 ; Operator 1 envelope
+op.r 0 1.002
+op.r 1 0.998
+op.e 1 100.0 20.0 0.5 0.5 5.0
+op.r 2 1.002
+op.e 2 80.0 0.5 0.1 0.7 100.0 ; Resonance
+op.r 3 0.499
+op.e 3 80.0 2.0 0.1 0.6 15.0  ; Pluck
 prog
-  lmix 0 0.006
   feed 0
-  mix 0 1.8
+  mix 1 0.6 ; FB
   feed 1
-  mix 1 1.0
-  amod 1 0.2
+  mix 0 3.5
+  feed 2
+  mix 1 10.0
+  feed 3
+  mix 2 2.0
+  mix 3 1.0
   out
 end

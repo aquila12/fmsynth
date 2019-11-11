@@ -1,0 +1,21 @@
+#!/bin/sh
+# Render 10 seconds of a voice and dump it to a raw file
+
+(
+    echo edit
+    echo  clr 1
+    echo  sel 0 1
+    echo  pat 100 100 100 '; Bunch of space, just in case'
+    cat   "$1"
+    echo  end
+    echo end
+
+    echo freq 0 0 $((69 << 24))
+    echo ampl 0 0 $((16777216))
+    echo keyd 0 0
+    echo run 240000
+    echo keyu 0 0
+    echo run 240000
+    echo end
+) |
+./fmsynth 2>/dev/null
