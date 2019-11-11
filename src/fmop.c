@@ -4,10 +4,8 @@
 #include "fmop.h"
 
 sample_t fmop_update_osc(fmop_t *operator, fmop_param_t *param, sample_t input) {
-  if(input) operator->ph += MUL(operator->f0, input + SAMPLE_1);
-  else operator->ph += operator->f0;
-
-  return sine(operator->ph);
+  operator->ph += operator->f0;
+  return sine(operator->ph + input * CYCLE);
 }
 
 sample_t fmop_update_adhr(fmop_t *operator, fmop_param_t *param, sample_t input) {
@@ -15,7 +13,7 @@ sample_t fmop_update_adhr(fmop_t *operator, fmop_param_t *param, sample_t input)
     if(operator->mode == adhr_release) operator->mode = adhr_idle;
     return input;
   }
-  
+
   if(operator->mode == adhr_idle) return 0;
 
   operator->ampl += param->rate[operator->mode];

@@ -9,6 +9,8 @@
 typedef uint32_t phase_t;
 #define PHASE_BITS 32
 
+#define CYCLE (1<<(PHASE_BITS - SAMPLE_FRACTION))
+
 typedef int32_t frequency_t;
 #define HERTZ ((float)UINT32_MAX / (float)RATE)
 
