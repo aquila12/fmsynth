@@ -14,7 +14,7 @@ prog
   feed 3
   mix 3 2.1
   feed 1
-  mix 0 1.1
+  mix 0 1.2
   feed 2
   mix 1 0.8
   mix 2 0.6
