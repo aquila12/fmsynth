@@ -4,7 +4,7 @@
 .map dguitar p31
 .map fbass p33
 .map fbass p34
-.map fbass p35
+.map pbass p35
 .map fbass p36
 .map fbass p37
 .map fbass p38
@@ -28,6 +28,7 @@
 .pat oguitar 10 30-oguitar.pat
 .pat dguitar 10 31-dguitar.pat
 .pat fbass 10 34-fbass.pat
+.pat pbass 10 35-pbass.pat
 .pat violin 8 41-violin.pat
 .pat viola 8 42-viola.pat
 .pat cello 8 43-cello.pat
