@@ -7,7 +7,7 @@ op.r 3 0.499
 op.e 3 80.0 5.0 10.0 0.7 15.0  ; Pluck
 prog
   feed 0
-  mix 1 0.34 ; FB
+  mix 1 0.2 ; FB
   feed 1
   mix 0 0.7
   feed 2
