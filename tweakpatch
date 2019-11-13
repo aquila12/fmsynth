@@ -17,6 +17,11 @@ bass)
   ON=7000
   OFF=1000
   ;;
+drum)
+  PATTERN="0 0"
+  ON=23000
+  OFF=1000
+  ;;
 *)
   PATTERN="$2"
   ON=7000

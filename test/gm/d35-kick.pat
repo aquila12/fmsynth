@@ -10,7 +10,7 @@ prog
   feed 0
   mix 1 0.24
   feed 2
-  mix 0 1.0
-  mix 2 1.2
+  mix 0 1.5
+  mix 2 1.6
   out
 end

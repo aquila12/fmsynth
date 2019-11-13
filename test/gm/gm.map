@@ -4,6 +4,7 @@
 .map !chihat c10 n42
 .map !ohihat c10 n46
 .map null c10	; Kill remaining drums
+;.map null ; Silence everything
 .map accord p22
 .map oguitar p30
 .map dguitar p31
