@@ -1,6 +1,8 @@
 .map !kick c10 n35
 .map !kick c10 n36
 .map !snare c10 n38
+.map !chihat c10 n42
+.map !ohihat c10 n46
 .map null c10	; Kill remaining drums
 .map accord p22
 .map oguitar p30
@@ -29,6 +31,8 @@
 .pat default 32 74-flute.pat	; Load patch with polyphony
 .pat !kick 2 d35-kick.pat
 .pat !snare 2 d38-snare.pat
+.pat !chihat 2 d42-chihat.pat
+.pat !ohihat 2 d46-ohihat.pat
 .pat accord 20 22-accord.pat
 .pat oguitar 10 30-oguitar.pat
 .pat dguitar 10 31-dguitar.pat
