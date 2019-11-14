@@ -8,12 +8,12 @@
 .map accord p22
 .map oguitar p30
 .map dguitar p31
-.map fbass p33
+.map abass p33
 .map fbass p34
 .map pbass p35
-.map fbass p36
-.map fbass p37
-.map fbass p38
+.map abass p36
+.map pbass p37
+.map pbass p38
 .map fbass p39
 .map fbass p40
 .map violin p41
@@ -37,6 +37,7 @@
 .pat accord 20 22-accord.pat
 .pat oguitar 10 30-oguitar.pat
 .pat dguitar 10 31-dguitar.pat
+.pat abass 10 33-abass.pat
 .pat fbass 10 34-fbass.pat
 .pat pbass 10 35-pbass.pat
 .pat violin 8 41-violin.pat
