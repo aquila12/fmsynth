@@ -51,5 +51,5 @@
 .pat piccolo 3 73-piccolo.pat
 .pat flute 3 74-flute.pat
 .pat recorder 3 75-recorder.pat
-.pat null 1 ../null.pat	; Load monophonic patch (null patch)
+.pat null 1 null.pat	; Load monophonic patch (null patch)
 .set
